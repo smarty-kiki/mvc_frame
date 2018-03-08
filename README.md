@@ -48,10 +48,10 @@
 │   └── index.php (web 请求入口文件)  
 ├── util (工具类文件目录)  
 │   └── load.php (工具类加载文件)  
-├── view (模版文件目录)  
+├── view (模版文件目录)  
 ├── LICENSE  
 ├── README.md  
-└── bootstrap.php (框架通用加载文件)  
+└── bootstrap.php (框架通用加载文件)  
 
 ## 10 秒看到 helloworld
 
