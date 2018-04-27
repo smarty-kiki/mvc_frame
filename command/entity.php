@@ -16,12 +16,12 @@ class %s extends entity
     public function __construct()
     {/*{{{*/
         %s
-    }/*}}}*/
+}/*}}}*/
 
-    public static function create()
-    {/*{{{*/
-        return parent::init();
-    }/*}}}*/
+public static function create()
+{/*{{{*/
+    return parent::init();
+}/*}}}*/
 }';
 
     $structs_str = [];
@@ -55,18 +55,18 @@ class {$entity_name}_dao extends dao
 function _generate_migration_file($entity_name, $entity_structs, $entity_relationships)
 {/*{{{*/
     $content = "# up
-CREATE TABLE `%s` (
-    `id` bigint(20) NOT NULL,
-    `version` int(11) NOT NULL,
-    `create_time` datetime DEFAULT NULL,
-    `update_time` datetime DEFAULT NULL,
-    `delete_time` datetime DEFAULT NULL,
-    %s
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        CREATE TABLE `%s` (
+            `id` bigint(20) NOT NULL,
+            `version` int(11) NOT NULL,
+            `create_time` datetime DEFAULT NULL,
+            `update_time` datetime DEFAULT NULL,
+            `delete_time` datetime DEFAULT NULL,
+            %s
+            PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-# down
-drop table `%s`;";
+    # down
+    drop table `%s`;";
 
     $columns = [];
 
@@ -166,8 +166,16 @@ command('entity:make-from-db', '从数据库表结构初始化 entity、dao、mi
         $schema_infos = db_query("show create table `$table`", [], unit_of_work_db_config_key());
         $schema_info = reset($schema_infos);
 
-        foreach (explode("\n", $schema_info['Create Table']) as $line) {
+        $lines = explode("\n", $schema_info['Create Table']);
+
+        foreach ($lines as $i => $line) {
+
             $line = trim($line);
+
+            if (stristr($line, 'CONSTRAINT')) {
+                unset($lines[$i]);
+                continue;
+            }
 
             if (stristr($line, 'CREATE TABLE')) continue;
             if (stristr($line, 'PRIMARY KEY')) continue;
@@ -199,7 +207,9 @@ command('entity:make-from-db', '从数据库表结构初始化 entity、dao、mi
             }
         }
 
-        $migration = sprintf("# up\n%s;\n\n# down\ndrop table `%s`;", $schema_info['Create Table'], $entity_name);
+        $up_sql = str_replace(",\n)", "\n)", implode("\n", $lines));
+
+        $migration = sprintf("# up\n%s;\n\n# down\ndrop table `%s`;", $up_sql, $entity_name);
 
         echo $entity_name.":\n";
         error_log(_generate_entity_file($entity_name, $entity_structs, $entity_relationships), 3, $file = ENTITY_DIR.'/'.$entity_name.'.php');
