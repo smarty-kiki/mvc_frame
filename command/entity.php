@@ -16,12 +16,12 @@ class %s extends entity
     public function __construct()
     {/*{{{*/
         %s
-}/*}}}*/
+    }/*}}}*/
 
-public static function create()
-{/*{{{*/
-    return parent::init();
-}/*}}}*/
+    public static function create()
+    {/*{{{*/
+        return parent::init();
+    }/*}}}*/
 }';
 
     $structs_str = [];
