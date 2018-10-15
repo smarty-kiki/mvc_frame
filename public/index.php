@@ -3,8 +3,10 @@
 // init
 include __DIR__.'/../bootstrap.php';
 include FRAME_DIR.'/http/application.php';
+include FRAME_DIR.'/template/blade.php';
 
 view_path(ROOT_DIR.'/view/');
+view_compiler(blade_view_compiler_generate());
 
 set_error_handler('http_err_action', E_ALL);
 set_exception_handler('http_ex_action');
