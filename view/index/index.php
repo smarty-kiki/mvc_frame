@@ -5,6 +5,6 @@
     <title></title>
 </head>
 <body>
-    <?=$text ?>
+    {{ $text }}
 </body>
 </html>
