@@ -3,7 +3,7 @@
 // init
 include __DIR__.'/../bootstrap.php';
 include FRAME_DIR.'/http/application.php';
-include FRAME_DIR.'/template/blade.php';
+include FRAME_DIR.'/view_compiler/blade.php';
 
 view_path(ROOT_DIR.'/view/');
 view_compiler(blade_view_compiler_generate());
@@ -21,9 +21,18 @@ if_verify(function ($action, $args) {
 
         $data = call_user_func_array($action, $args);
 
-        header('Content-type: text/html');
+        if (is_array($data)) {
 
-        return $data;
+            header('Content-type: application/json');
+
+            return json($data);
+
+        } else {
+
+            header('Content-type: text/html');
+
+            return $data;
+        }
     });
 });
 
@@ -36,6 +45,7 @@ if_not_found(function () {
 
 // init controller
 include CONTROLLER_DIR.'/index.php';
+include CONTROLLER_DIR.'/order.php';
 
 // fix
 not_found();
