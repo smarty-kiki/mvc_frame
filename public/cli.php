@@ -17,6 +17,7 @@ include COMMAND_DIR.'/migrate.php';
 include COMMAND_DIR.'/description.php';
 include COMMAND_DIR.'/entity.php';
 include COMMAND_DIR.'/queue.php';
+include COMMAND_DIR.'/crud.php';
 
 // fix
 command_not_found();

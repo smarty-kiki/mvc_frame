@@ -4,6 +4,7 @@ ini_set('display_errors', 'on');
 date_default_timezone_set('Asia/Shanghai');
 
 define('ROOT_DIR', __DIR__);
+define('VIEW_DIR', ROOT_DIR.'/view');
 define('FRAME_DIR', ROOT_DIR.'/frame');
 define('DOMAIN_DIR', ROOT_DIR.'/domain');
 define('COMMAND_DIR', ROOT_DIR.'/command');
@@ -18,6 +19,7 @@ include FRAME_DIR.'/storage/mongodb.php';
 include FRAME_DIR.'/cache/redis.php';
 include FRAME_DIR.'/queue/beanstalk.php';
 include FRAME_DIR.'/unitofwork.php';
+include FRAME_DIR.'/log/file.php';
 
 config_dir(ROOT_DIR.'/config');
 
