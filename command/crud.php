@@ -415,6 +415,7 @@ command('crud:make-crud-controller-and-view', '通过描述文件生成 CRUD 控
     $entity_display_name = array_get($description, 'display_name', '');
     $entity_description = array_get($description, 'description', '');
 
+    $entity_structs = [];
     foreach ($structs as $column => $struct) {
 
         $tmp = [
@@ -436,6 +437,7 @@ command('crud:make-crud-controller-and-view', '通过描述文件生成 CRUD 控
 
     $relationships = array_get($description, 'relationships', []);
 
+    $entity_relationships = [];
     foreach ($relationships as $relation_name => $relationship) {
 
         $relation_entity_name = $relationship['entity'];
