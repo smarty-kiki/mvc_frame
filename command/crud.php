@@ -404,7 +404,7 @@ function _generate_view_list_file($entity_name)
     );
 }/*}}}*/
 
-command('crud:make-crud-controller-and-view', '通过描述文件生成 CRUD 控制器和页面', function ()
+command('crud:make-from-description', '通过描述文件生成 CRUD 控制器和页面', function ()
 {/*{{{*/
 
     $entity_name = command_paramater('entity_name');
