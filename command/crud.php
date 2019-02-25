@@ -179,19 +179,14 @@ function _generate_view_add_file($entity_name)
 </head>
 <body>
 <table>
-<thead>
+<tbody>
+
+    <form action='' method='POST'>
+    @foreach (%s::\$struct_types as \$struct => \$type)
     <tr>
-        @foreach (%s::\$struct_types as \$struct => \$type)
-        <th>{{ array_key_exists(\$struct, %s::\$struct_display_names)? %s::\$struct_display_names[\$struct]: \$struct }}</th>
-        @endforeach
-        <th>
-            <a href='javascript:window.history.back(-1);'>取消</a>
-        </th>
-    </tr>
-</thead>
-    <tr>
-        <form action='' method='POST'>
-        @foreach (%s::\$struct_types as \$struct => \$type)
+        <td>
+            {{ array_key_exists(\$struct, %s::\$struct_display_names)? %s::\$struct_display_names[\$struct]: \$struct }}
+        </td>
         <td>
             @if (%s::\$struct_types[\$struct] === 'enum')
             <select name='{{ \$struct }}'>
@@ -203,13 +198,17 @@ function _generate_view_add_file($entity_name)
             <input type='{{ \$type }}' name='{{ \$struct }}'>
             @endif
         </td>
-        @endforeach
+    </tr>
+    @endforeach
+    <tr>
+        <td>
+            <a href='javascript:window.history.back(-1);'>取消</a>
+        </td>
         <td>
             <input type='submit' value='保存'>
         </td>
-        </form>
     </tr>
-<tbody>
+    </form>
 </tbody>
 </table>
 </body>
@@ -221,7 +220,6 @@ function _generate_view_add_file($entity_name)
         $entity_name,
         $entity_name,
         $entity_name, $entity_name,
-        $entity_name,
         $entity_name,
         $entity_name
     );
@@ -264,19 +262,14 @@ function _generate_view_update_file($entity_name)
 </head>
 <body>
 <table>
-<thead>
+<tbody>
+
+    <form action='' method='POST'>
+    @foreach (%s::\$struct_types as \$struct => \$type)
     <tr>
-        @foreach (%s::\$struct_types as \$struct => \$type)
-        <th>{{ array_key_exists(\$struct, %s::\$struct_display_names)? %s::\$struct_display_names[\$struct]: \$struct }}</th>
-        @endforeach
-        <th>
-            <a href='javascript:window.history.back(-1);'>取消</a>
-        </th>
-    </tr>
-</thead>
-    <tr>
-        <form action='' method='POST'>
-        @foreach (%s::\$struct_types as \$struct => \$type)
+        <td>
+            {{ array_key_exists(\$struct, %s::\$struct_display_names)? %s::\$struct_display_names[\$struct]: \$struct }}
+        </td>
         <td>
             @if (%s::\$struct_types[\$struct] === 'enum')
             <select name='{{ \$struct }}'>
@@ -288,13 +281,18 @@ function _generate_view_update_file($entity_name)
             <input type='{{ \$type }}' name='{{ \$struct }}' value='{{ \$%s->{\$struct} }}'>
             @endif
         </td>
-        @endforeach
+    </tr>
+    @endforeach
+    <tr>
+        <td>
+            <a href='javascript:window.history.back(-1);'>取消</a>
+        </td>
         <td>
             <input type='submit' value='保存'>
         </td>
-        </form>
     </tr>
-<tbody>
+    </form>
+
 </tbody>
 </table>
 </body>
@@ -306,7 +304,6 @@ function _generate_view_update_file($entity_name)
         $entity_name, $entity_name,
         $entity_name,
         $entity_name, $entity_name,
-        $entity_name,
         $entity_name,
         $entity_name,
         $entity_name,
