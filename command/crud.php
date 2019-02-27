@@ -43,7 +43,7 @@ if_get('/%s', function ()
     \$inputs['delete_time'] = null;
 
     return render('%s/list', [
-        '%s' =>dao('%s')->find_all_by_column(\$inputs),
+        '%s' => dao('%s')->find_all_by_column(\$inputs),
     ]);
 });/*}}}*/
 
