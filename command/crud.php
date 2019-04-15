@@ -40,8 +40,6 @@ if_get('/%s', function ()
 {/*{{{*/
     %s
 
-    \$inputs['delete_time'] = null;
-
     return render('%s/list', [
         '%s' => dao('%s')->find_all_by_column(\$inputs),
     ]);
