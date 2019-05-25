@@ -370,7 +370,7 @@ function _generate_view_list_file($entity_name)
         @endif
         @endforeach
         <td>
-            <a href='/%s/update/{{ \$%s->id }}}'>修改</a>
+            <a href='/%s/update/{{ \$%s->id }}'>修改</a>
             <a href='javascript:delete_{{ \$%s->id }}.submit();'>删除</a>
             <form id='delete_{{ \$%s->id }}' action='/%s/delete/{{ \$%s->id }}' method='POST'></form>
         </td>
