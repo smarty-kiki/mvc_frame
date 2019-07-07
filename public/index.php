@@ -2,7 +2,7 @@
 
 // init
 include __DIR__.'/../bootstrap.php';
-include FRAME_DIR.'/http/application.php';
+include FRAME_DIR.'/http/php_fpm/application.php';
 include FRAME_DIR.'/view_compiler/blade.php';
 
 view_path(VIEW_DIR.'/');
