@@ -1,6 +1,8 @@
 <?php
 
 define('DESCRIPTION_DIR', DOMAIN_DIR.'/description');
+define('DESCRIPTION_EXTENSION_DIR', COMMAND_DIR.'/description_extension');
+define('DESCRIPTION_STRUCT_EXTENSION_DIR', DESCRIPTION_EXTENSION_DIR.'/struct');
 
 function _get_entity_name_by_command_paramater()
 {/*{{{*/
@@ -19,6 +21,16 @@ function _get_entity_name_by_command_paramater()
     }
 
     return $entity_names;
+}/*}}}*/
+
+function _get_struct_info_from_extension($type)
+{/*{{{*/
+    $path = DESCRIPTION_STRUCT_EXTENSION_DIR.'/'.$type.'.php';
+    if (is_file($path)) {
+        return include $path;
+    }
+
+    return false;
 }/*}}}*/
 
 function _generate_description_file($entity_name, $display_name, $description, $entity_structs, $entity_relationships, $entity_snaps)

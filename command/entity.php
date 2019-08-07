@@ -287,6 +287,12 @@ command('entity:make-from-description', '从实体描述文件初始化 entity�
         $entity_structs = [];
         foreach ($structs as $column => $struct) {
 
+            if ($extension = array_get($struct, 'extension', null)) {
+                if ($extension_struct = _get_struct_info_from_extension($extension)) {
+                    $struct = array_merge($extension_struct, array_filter($struct));
+                }
+            }
+
             $tmp = [
                 'name' => $column,
                 'datatype' => $struct['type'],
