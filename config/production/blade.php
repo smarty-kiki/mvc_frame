@@ -2,6 +2,6 @@
 
 return [
 
-    'compiled_md5_path' => false,
+    'compiled_cache' => true,
 
 ];
