@@ -2,7 +2,7 @@
 
 function _generate_controller_file($entity_name, $entity_structs, $entity_relationships)
 {/*{{{*/
-    $resource_plural = $entity_name.'s';
+    $resource_plural = english_word_pluralize($entity_name);
     $resource_id_key = $entity_name.'_id';
 
     $list_str = [];
@@ -311,7 +311,7 @@ function _generate_view_update_file($entity_name)
 
 function _generate_view_list_file($entity_name)
 {/*{{{*/
-    $resource_plural = $entity_name.'s';
+    $resource_plural = english_word_pluralize($entity_name);
 
     $template = "<!DOCTYPE html>
 <html lang='en'>
