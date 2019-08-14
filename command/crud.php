@@ -146,7 +146,7 @@ function _generate_view_add_file($entity_name)
 <html lang='en'>
 <head>
     <meta charset='UTF-8'>
-    <title>{{ %s::\$entity_display_name }}添加</title>
+    <title>{{ \$entity_name::\$entity_display_name }}添加</title>
     <style>
      table {
          font-family: verdana,arial,sans-serif;
@@ -180,24 +180,22 @@ function _generate_view_add_file($entity_name)
 <tbody>
 
     <form action='' method='POST'>
-    @foreach (%s::\$struct_types as \$struct => \$type)
+@foreach (\$entity_name::\$struct_types as \$struct => \$type)
     <tr>
+        <td>{{ array_key_exists(\$struct, \$entity_name::\$struct_display_names)? \$entity_name::\$struct_display_names[\$struct]: \$struct }}</td>
         <td>
-            {{ array_key_exists(\$struct, %s::\$struct_display_names)? %s::\$struct_display_names[\$struct]: \$struct }}
-        </td>
-        <td>
-            @if (%s::\$struct_types[\$struct] === 'enum')
+@if (\$type === 'enum')
             <select name='{{ \$struct }}'>
-            @foreach (%s::\$struct_formats[\$struct] as \$key => \$value)
-            <option value='{{ \$key }}'>{{ \$value }}</option>
-            @endforeach
+@foreach (\$entity_name::\$struct_formats[\$struct] as \$key => \$value)
+                <option value='{{ \$key }}'>{{ \$value }}</option>
+@endforeach
             </select>
-            @else
+@else
             <input type='{{ \$type }}' name='{{ \$struct }}'>
-            @endif
+@endif
         </td>
     </tr>
-    @endforeach
+@endforeach
     <tr>
         <td>
             <a href='javascript:window.history.back(-1);'>取消</a>
@@ -214,22 +212,19 @@ function _generate_view_add_file($entity_name)
 </script>
 </html>";
 
-    return sprintf($template,
-        $entity_name,
-        $entity_name,
-        $entity_name, $entity_name,
-        $entity_name,
-        $entity_name
-    );
+    return blade_eval($template, [
+        'entity_name' => $entity_name,
+    ]);
 }/*}}}*/
 
 function _generate_view_update_file($entity_name)
 {/*{{{*/
+
     $template = "<!DOCTYPE html>
 <html lang='en'>
 <head>
     <meta charset='UTF-8'>
-    <title>{{ %s::\$entity_display_name }}[{{ \$%s->id }}]修改</title>
+    <title>{{ \$entity_name::\$entity_display_name }}[@{{ \$%s->id }}]修改</title>
     <style>
      table {
          font-family: verdana,arial,sans-serif;
@@ -263,24 +258,22 @@ function _generate_view_update_file($entity_name)
 <tbody>
 
     <form action='' method='POST'>
-    @foreach (%s::\$struct_types as \$struct => \$type)
+@foreach (\$entity_name::\$struct_types as \$struct => \$type)
     <tr>
+        <td>{{ array_key_exists(\$struct, \$entity_name::\$struct_display_names)? \$entity_name::\$struct_display_names[\$struct]: \$struct }}</td>
         <td>
-            {{ array_key_exists(\$struct, %s::\$struct_display_names)? %s::\$struct_display_names[\$struct]: \$struct }}
-        </td>
-        <td>
-            @if (%s::\$struct_types[\$struct] === 'enum')
+@if (\$entity_name::\$struct_types[\$struct] === 'enum')
             <select name='{{ \$struct }}'>
-                @foreach (%s::\$struct_formats[\$struct] as \$key => \$value)
-                <option value='{{ \$key }}' {{ \$key === \$%s->{\$struct}?'selected':'' }}>{{ \$value }}</option>
-                @endforeach
+@foreach (\$entity_name::\$struct_formats[\$struct] as \$key => \$value)
+                <option value='{{ \$key }}' ^{^{ \$key === \$%s->{{\$struct}}?'selected':'' ^}^}>{{ \$value }}</option>
+@endforeach
             </select>
-            @else
-            <input type='{{ \$type }}' name='{{ \$struct }}' value='{{ \$%s->{\$struct} }}'>
-            @endif
+@else
+            <input type='{{ \$type }}' name='{{ \$struct }}' value='@{{ \$%s->{\$struct} }}'>
+@endif
         </td>
     </tr>
-    @endforeach
+@endforeach
     <tr>
         <td>
             <a href='javascript:window.history.back(-1);'>取消</a>
@@ -298,15 +291,13 @@ function _generate_view_update_file($entity_name)
 </script>
 </html>";
 
-    return sprintf($template,
-        $entity_name, $entity_name,
-        $entity_name,
-        $entity_name, $entity_name,
-        $entity_name,
-        $entity_name,
-        $entity_name,
-        $entity_name
-    );
+    $template =  sprintf($template, $entity_name, $entity_name, $entity_name);
+
+    $content = blade_eval($template, [
+        'entity_name' => $entity_name,
+    ]);
+
+    return str_replace('^', '', $content);
 }/*}}}*/
 
 function _generate_view_list_file($entity_name)
@@ -351,38 +342,38 @@ function _generate_view_list_file($entity_name)
 <thead>
     <tr>
         <th>ID</th>
-        @foreach (%s::\$struct_types as \$struct => \$type)
+@foreach (%s::\$struct_types as \$struct => \$type)
         <th>{{ array_key_exists(\$struct, %s::\$struct_display_names)? %s::\$struct_display_names[\$struct]: \$struct }}</th>
-        @endforeach
+@endforeach
         <th>
             <a href='/%s/add'>添加</a>
         </th>
     </tr>
 </thead>
-    @foreach (\$%s as \$id => \$%s)
+    @^foreach (\$%s as \$id => \$%s)
     <tr>
-        <td>{{ \$id }}</td>
-        @foreach (%s::\$struct_types as \$struct => \$type)
-        @if (%s::\$struct_types[\$struct] === 'enum')
-        <td>{{ \$%s->{'get_'.\$struct.'_description'}() }}</td>
-        @else
-        <td>{{ \$%s->{\$struct} }}</td>
-        @endif
-        @endforeach
+        <td>@{{ \$id }}</td>
+@foreach (%s::\$struct_types as \$struct => \$type)
+@if (%s::\$struct_types[\$struct] === 'enum')
+        <td>{^{ \$%s->get_{{\$struct}}_description() }^}</td>
+@else
+        <td>{^{ \$%s->{{\$struct}} }^}</td>
+@endif
+@endforeach
         <td>
-            <a href='/%s/update/{{ \$%s->id }}'>修改</a>
-            <a href='javascript:delete_{{ \$%s->id }}.submit();'>删除</a>
-            <form id='delete_{{ \$%s->id }}' action='/%s/delete/{{ \$%s->id }}' method='POST'></form>
+            <a href='/%s/update/@{{ \$%s->id }}'>修改</a>
+            <a href='javascript:delete_@{{ \$%s->id }}.submit();'>删除</a>
+            <form id='delete_@{{ \$%s->id }}' action='/%s/delete/@{{ \$%s->id }}' method='POST'></form>
         </td>
     </tr>
-    @endforeach
+    @^endforeach
 <tbody>
 </tbody>
 </table>
 </body>
 </html>";
 
-    return sprintf($template,
+    $template = sprintf($template,
         $entity_name,
         $entity_name,
         $entity_name, $entity_name,
@@ -397,6 +388,12 @@ function _generate_view_list_file($entity_name)
         $entity_name,
         $entity_name, $resource_plural, $entity_name
     );
+
+    $content = blade_eval($template, [
+        'entity_name' => $entity_name,
+    ]);
+
+    return str_replace('^', '', $content);
 }/*}}}*/
 
 command('crud:make-from-description', '通过描述文件生成 CRUD 控制器和页面', function ()
@@ -502,17 +499,20 @@ command('crud:make-from-description', '通过描述文件生成 CRUD 控制器�
         || mkdir($dir_name, 0755),
         "当前用户没有权限创建目录 $dir_name");
 
-    error_log(_generate_controller_file($entity_name, $entity_structs, $entity_relationships), 3, $controller_file = CONTROLLER_DIR.'/'.$entity_name.'.php');
+    $controller_file_string = _generate_controller_file($entity_name, $entity_structs, $entity_relationships);
+    $view_add_file_string = _generate_view_add_file($entity_name);
+    $view_update_file_string = _generate_view_update_file($entity_name);
+    $view_list_file_string = _generate_view_list_file($entity_name);
+
+
+    // 写文件
+    error_log($controller_file_string, 3, $controller_file = CONTROLLER_DIR.'/'.$entity_name.'.php');
     echo $controller_file."\n";
-
-    error_log(_generate_view_add_file($entity_name), 3, $file = $dir_name.'/add.php');
+    error_log($view_add_file_string, 3, $file = $dir_name.'/add.php');
     echo $file."\n";
-
-    error_log(_generate_view_update_file($entity_name), 3, $file = $dir_name.'/update.php');
+    error_log($view_update_file_string, 3, $file = $dir_name.'/update.php');
     echo $file."\n";
-
-    error_log(_generate_view_list_file($entity_name), 3, $file = $dir_name.'/list.php');
+    error_log($view_list_file_string, 3, $file = $dir_name.'/list.php');
     echo $file."\n";
-
     echo "\n将 $controller_file 加入到 public/index.php 即可响应请求\n";
 });/*}}}*/
