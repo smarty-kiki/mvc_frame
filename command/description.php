@@ -3,6 +3,7 @@
 define('DESCRIPTION_DIR', DOMAIN_DIR.'/description');
 define('DESCRIPTION_EXTENSION_DIR', COMMAND_DIR.'/description_extension');
 define('DESCRIPTION_STRUCT_EXTENSION_DIR', DESCRIPTION_EXTENSION_DIR.'/struct');
+define('DESCRIPTION_TEMPLATE_EXTENSION_DIR', DESCRIPTION_EXTENSION_DIR.'/template');
 
 function _get_entity_name_by_command_paramater()
 {/*{{{*/
@@ -23,11 +24,31 @@ function _get_entity_name_by_command_paramater()
     return $entity_names;
 }/*}}}*/
 
-function _get_struct_info_from_extension($type)
+function _get_struct_info_from_extension($extension)
 {/*{{{*/
-    $path = DESCRIPTION_STRUCT_EXTENSION_DIR.'/'.$type.'.php';
+    $path = DESCRIPTION_STRUCT_EXTENSION_DIR.'/'.$extension.'.php';
     if (is_file($path)) {
         return include $path;
+    }
+
+    return false;
+}/*}}}*/
+
+function _get_struct_template_from_extension($action, $type)
+{/*{{{*/
+    $path = DESCRIPTION_TEMPLATE_EXTENSION_DIR.'/'.$action.'/struct/'.$type.'.php';
+    if (is_file($path)) {
+        return file_get_contents($path);
+    }
+
+    return false;
+}/*}}}*/
+
+function _get_page_template_from_extension($action)
+{/*{{{*/
+    $path = DESCRIPTION_TEMPLATE_EXTENSION_DIR.'/'.$action.'/page.php';
+    if (is_file($path)) {
+        return file_get_contents($path);
     }
 
     return false;

@@ -140,158 +140,65 @@ if_post('/%s/delete/*', function ($%s)
     );
 }/*}}}*/
 
+function _generate_page($action)
+{/*{{{*/
+    $content = _get_page_template_from_extension($action);
+
+    otherwise($content, '没找到 '.$action.' 的 page 模版');
+
+    return $content;
+}/*}}}*/
+
+function _generate_struct_add($struct_type)
+{/*{{{*/
+    $content = _get_struct_template_from_extension('add', $struct_type);
+
+    otherwise($content, '没找到 '.$struct_type.' 的 add 模版');
+
+    return $content;
+}/*}}}*/
+
+function _generate_struct_detail($struct_type)
+{/*{{{*/
+    $content = _get_struct_template_from_extension('detail', $struct_type);
+
+    otherwise($content, '没找到 '.$struct_type.' 的 detail 模版');
+
+    return $content;
+}/*}}}*/
+
+function _generate_struct_update($struct_type)
+{/*{{{*/
+    $content = _get_struct_template_from_extension('update', $struct_type);
+
+    otherwise($content, '没找到 '.$struct_type.' 的 update 模版');
+
+    return $content;
+}/*}}}*/
+
+function _generate_struct_list($struct_type)
+{/*{{{*/
+    $content = _get_struct_template_from_extension('list', $struct_type);
+
+    otherwise($content, '没找到 '.$struct_type.' 的 list 模版');
+
+    return $content;
+}/*}}}*/
+
 function _generate_view_add_file($entity_name)
 {/*{{{*/
-    $template = "<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <title>{{ \$entity_name::\$entity_display_name }}添加</title>
-    <style>
-     table {
-         font-family: verdana,arial,sans-serif;
-         font-size:11px;
-         color:#333333;
-         border-width: 1px;
-         border-color: #666666;
-         border-collapse: collapse;
-         width: 100%%;
-     }
-     table th {
-         border-width: 1px;
-         padding: 8px;
-         border-style: solid;
-         border-color: #666666;
-         background-color: #dedede;
-         text-align: center;
-     }
-     table td {
-         border-width: 1px;
-         padding: 8px;
-         border-style: solid;
-         border-color: #666666;
-         background-color: #ffffff;
-         text-align: center;
-     }
-    </style>
-</head>
-<body>
-<table>
-<tbody>
+    $template = _generate_page('add');
 
-    <form action='' method='POST'>
-@foreach (\$entity_name::\$struct_types as \$struct => \$type)
-    <tr>
-        <td>{{ array_key_exists(\$struct, \$entity_name::\$struct_display_names)? \$entity_name::\$struct_display_names[\$struct]: \$struct }}</td>
-        <td>
-@if (\$type === 'enum')
-            <select name='{{ \$struct }}'>
-@foreach (\$entity_name::\$struct_formats[\$struct] as \$key => \$value)
-                <option value='{{ \$key }}'>{{ \$value }}</option>
-@endforeach
-            </select>
-@else
-            <input type='{{ \$type }}' name='{{ \$struct }}'>
-@endif
-        </td>
-    </tr>
-@endforeach
-    <tr>
-        <td>
-            <a href='javascript:window.history.back(-1);'>取消</a>
-        </td>
-        <td>
-            <input type='submit' value='保存'>
-        </td>
-    </tr>
-    </form>
-</tbody>
-</table>
-</body>
-<script>
-</script>
-</html>";
-
-    return blade_eval($template, [
+    $content = blade_eval($template, [
         'entity_name' => $entity_name,
     ]);
+
+    return str_replace('^', '', $content);
 }/*}}}*/
 
 function _generate_view_update_file($entity_name)
 {/*{{{*/
-
-    $template = "<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <title>{{ \$entity_name::\$entity_display_name }}[@{{ \$%s->id }}]修改</title>
-    <style>
-     table {
-         font-family: verdana,arial,sans-serif;
-         font-size:11px;
-         color:#333333;
-         border-width: 1px;
-         border-color: #666666;
-         border-collapse: collapse;
-         width: 100%%;
-     }
-     table th {
-         border-width: 1px;
-         padding: 8px;
-         border-style: solid;
-         border-color: #666666;
-         background-color: #dedede;
-         text-align: center;
-     }
-     table td {
-         border-width: 1px;
-         padding: 8px;
-         border-style: solid;
-         border-color: #666666;
-         background-color: #ffffff;
-         text-align: center;
-     }
-    </style>
-</head>
-<body>
-<table>
-<tbody>
-
-    <form action='' method='POST'>
-@foreach (\$entity_name::\$struct_types as \$struct => \$type)
-    <tr>
-        <td>{{ array_key_exists(\$struct, \$entity_name::\$struct_display_names)? \$entity_name::\$struct_display_names[\$struct]: \$struct }}</td>
-        <td>
-@if (\$entity_name::\$struct_types[\$struct] === 'enum')
-            <select name='{{ \$struct }}'>
-@foreach (\$entity_name::\$struct_formats[\$struct] as \$key => \$value)
-                <option value='{{ \$key }}' ^{^{ \$key === \$%s->{{\$struct}}?'selected':'' ^}^}>{{ \$value }}</option>
-@endforeach
-            </select>
-@else
-            <input type='{{ \$type }}' name='{{ \$struct }}' value='@{{ \$%s->{\$struct} }}'>
-@endif
-        </td>
-    </tr>
-@endforeach
-    <tr>
-        <td>
-            <a href='javascript:window.history.back(-1);'>取消</a>
-        </td>
-        <td>
-            <input type='submit' value='保存'>
-        </td>
-    </tr>
-    </form>
-
-</tbody>
-</table>
-</body>
-<script>
-</script>
-</html>";
-
-    $template =  sprintf($template, $entity_name, $entity_name, $entity_name);
+    $template = _generate_page('update');
 
     $content = blade_eval($template, [
         'entity_name' => $entity_name,
@@ -302,92 +209,7 @@ function _generate_view_update_file($entity_name)
 
 function _generate_view_list_file($entity_name)
 {/*{{{*/
-    $resource_plural = english_word_pluralize($entity_name);
-
-    $template = "<!DOCTYPE html>
-<html lang='en'>
-<head>
-    <meta charset='UTF-8'>
-    <title>{{ %s::\$entity_display_name }}</title>
-    <style>
-     table {
-         font-family: verdana,arial,sans-serif;
-         font-size:11px;
-         color:#333333;
-         border-width: 1px;
-         border-color: #666666;
-         border-collapse: collapse;
-         width: 100%%;
-     }
-     table th {
-         border-width: 1px;
-         padding: 8px;
-         border-style: solid;
-         border-color: #666666;
-         background-color: #dedede;
-         text-align: center;
-     }
-     table td {
-         border-width: 1px;
-         padding: 8px;
-         border-style: solid;
-         border-color: #666666;
-         background-color: #ffffff;
-         text-align: center;
-     }
-    </style>
-</head>
-<body>
-<table>
-<thead>
-    <tr>
-        <th>ID</th>
-@foreach (%s::\$struct_types as \$struct => \$type)
-        <th>{{ array_key_exists(\$struct, %s::\$struct_display_names)? %s::\$struct_display_names[\$struct]: \$struct }}</th>
-@endforeach
-        <th>
-            <a href='/%s/add'>添加</a>
-        </th>
-    </tr>
-</thead>
-    @^foreach (\$%s as \$id => \$%s)
-    <tr>
-        <td>@{{ \$id }}</td>
-@foreach (%s::\$struct_types as \$struct => \$type)
-@if (%s::\$struct_types[\$struct] === 'enum')
-        <td>{^{ \$%s->get_{{\$struct}}_description() }^}</td>
-@else
-        <td>{^{ \$%s->{{\$struct}} }^}</td>
-@endif
-@endforeach
-        <td>
-            <a href='/%s/update/@{{ \$%s->id }}'>修改</a>
-            <a href='javascript:delete_@{{ \$%s->id }}.submit();'>删除</a>
-            <form id='delete_@{{ \$%s->id }}' action='/%s/delete/@{{ \$%s->id }}' method='POST'></form>
-        </td>
-    </tr>
-    @^endforeach
-<tbody>
-</tbody>
-</table>
-</body>
-</html>";
-
-    $template = sprintf($template,
-        $entity_name,
-        $entity_name,
-        $entity_name, $entity_name,
-        $resource_plural,
-        $resource_plural, $entity_name,
-        $entity_name,
-        $entity_name,
-        $entity_name,
-        $entity_name,
-        $resource_plural,
-        $entity_name,
-        $entity_name,
-        $entity_name, $resource_plural, $entity_name
-    );
+    $template = _generate_page('list');
 
     $content = blade_eval($template, [
         'entity_name' => $entity_name,
