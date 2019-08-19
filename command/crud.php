@@ -2,16 +2,9 @@
 
 function _generate_controller_file($entity_name, $entity_structs, $entity_relationships)
 {/*{{{*/
-    $resource_plural = english_word_pluralize($entity_name);
-    $resource_id_key = $entity_name.'_id';
-
-    $list_str = [];
-    $input_str = [];
+    $inputs = [];
     foreach ($entity_structs as $struct) {
-        $struct_name = $struct['name'];
-
-        $list_str[] = "\$inputs['$struct_name']";
-        $input_str[] = "'$struct_name'";
+        $inputs[] = $struct['name'];
     }
 
     foreach ($entity_relationships as $relationship) {
@@ -20,124 +13,66 @@ function _generate_controller_file($entity_name, $entity_structs, $entity_relati
         $relationship_name = $relationship['relation_name'];
 
         if ($relationship_type !== 'has_many') {
-
-            $list_str[] = "\$inputs['".$relationship_name."_id']";
-            $input_str[] = "'".$relationship_name."_id'";
+            $inputs[] = $relationship_name.'_id';
         }
     }
 
-    $input_content = "\$inputs = [];
-    list(
-        ".implode(",\n        ", $list_str)."
-    ) = input_list(
-        ".implode(",\n        ", $input_str)."
-    );
-    \$inputs = array_filter(\$inputs, 'not_null');";
+    $content = _get_controller_template_from_extension('list');
+
+    otherwise($content, '没找到 controller 的 list 模版');
+
+    $list_content =  blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_structs' => $inputs,
+    ]);
+
+    $content = _get_controller_template_from_extension('add');
+
+    otherwise($content, '没找到 controller 的 add 模版');
+
+    $add_content =  blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_structs' => $inputs,
+    ]);
+
+    $content = _get_controller_template_from_extension('detail');
+
+    otherwise($content, '没找到 controller 的 detail 模版');
+
+    $detail_content =  blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_structs' => $inputs,
+    ]);
+
+    $content = _get_controller_template_from_extension('update');
+
+    otherwise($content, '没找到 controller 的 update 模版');
+
+    $update_content =  blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_structs' => $inputs,
+    ]);
+
+    $content = _get_controller_template_from_extension('delete');
+
+    otherwise($content, '没找到 controller 的 delete 模版');
+
+    $delete_content =  blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_structs' => $inputs,
+    ]);
 
     $template = "<?php
 
-if_get('/%s', function ()
-{/*{{{*/
-    %s
+%s
+%s
+%s
+%s
+%s";
 
-    return render('%s/list', [
-        '%s' => dao('%s')->find_all_by_column(\$inputs),
-    ]);
-});/*}}}*/
+    $content = sprintf($template, $list_content, $add_content, $detail_content, $update_content, $delete_content);
 
-if_get('/%s/add', function ()
-{/*{{{*/
-    return render('%s/add');
-});/*}}}*/
-
-if_post('/%s/add', function ()
-{/*{{{*/
-    %s
-
-    $%s = %s::create();
-
-    foreach (\$inputs as \$property => \$value) {
-        $%s->{\$property} = \$value;
-    }
-
-    return redirect('/%s');
-});/*}}}*/
-
-if_get('/%s/update/*', function ($%s)
-{/*{{{*/
-    $%s = dao('%s')->find($%s);
-    otherwise($%s->is_not_null(), '%s not found');
-
-    return render('%s/update', [
-        '%s' => $%s,
-    ]);
-});/*}}}*/
-
-if_post('/%s/update/*', function ($%s)
-{/*{{{*/
-    $%s = dao('%s')->find($%s);
-    otherwise($%s->is_not_null(), '%s not found');
-
-    %s
-
-    foreach (\$inputs as \$property => \$value) {
-        $%s->{\$property} = \$value;
-    }
-
-    redirect('/%s');
-});/*}}}*/
-
-if_post('/%s/delete/*', function ($%s)
-{/*{{{*/
-    $%s = dao('%s')->find($%s);
-    otherwise($%s->is_not_null(), '%s not found');
-
-    $%s->delete();
-
-    redirect('/%s');
-});/*}}}*/";
-
-    return sprintf($template, 
-
-        // if_get_all
-        $resource_plural,
-        $input_content,
-        $entity_name,
-        $resource_plural, $entity_name,
-
-        // if_get_add
-        $resource_plural,
-        $entity_name,
-
-        // if_post_add
-        $resource_plural,
-        $input_content,
-        $entity_name, $entity_name,
-        $entity_name,
-        $resource_plural,
-
-        // if_get_update
-        $resource_plural, $resource_id_key,
-        $entity_name, $entity_name, $resource_id_key,
-        $entity_name, $entity_name,
-        $entity_name,
-        $entity_name, $entity_name,
-
-        // if_post_update
-        $resource_plural, $resource_id_key,
-        $entity_name, $entity_name, $resource_id_key,
-        $entity_name, $entity_name,
-        $input_content,
-        $entity_name,
-        $resource_plural,
-
-        // if_post_delete
-        $resource_plural, $resource_id_key,
-        $entity_name, $entity_name, $resource_id_key,
-        $entity_name, $entity_name,
-        $entity_name,
-        $resource_plural
-    );
+    return str_replace('^', '', $content);
 }/*}}}*/
 
 function _generate_page($action)
