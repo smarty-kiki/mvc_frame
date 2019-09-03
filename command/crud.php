@@ -84,7 +84,7 @@ function _generate_page($action)
     return $content;
 }/*}}}*/
 
-function _generate_struct_add($struct_type)
+function _generate_template_struct_add($struct_type)
 {/*{{{*/
     $content = _get_struct_template_from_extension('add', $struct_type);
 
@@ -93,7 +93,7 @@ function _generate_struct_add($struct_type)
     return $content;
 }/*}}}*/
 
-function _generate_struct_detail($struct_type)
+function _generate_template_struct_detail($struct_type)
 {/*{{{*/
     $content = _get_struct_template_from_extension('detail', $struct_type);
 
@@ -102,7 +102,7 @@ function _generate_struct_detail($struct_type)
     return $content;
 }/*}}}*/
 
-function _generate_struct_update($struct_type)
+function _generate_template_struct_update($struct_type)
 {/*{{{*/
     $content = _get_struct_template_from_extension('update', $struct_type);
 
@@ -111,9 +111,45 @@ function _generate_struct_update($struct_type)
     return $content;
 }/*}}}*/
 
-function _generate_struct_list($struct_type)
+function _generate_template_struct_list($struct_type)
 {/*{{{*/
     $content = _get_struct_template_from_extension('list', $struct_type);
+
+    otherwise($content, '没找到 '.$struct_type.' 的 list 模版');
+
+    return $content;
+}/*}}}*/
+
+function _generate_controller_struct_add($struct_type)
+{/*{{{*/
+    $content = _get_struct_controller_from_extension('add', $struct_type);
+
+    otherwise($content, '没找到 '.$struct_type.' 的 add 模版');
+
+    return $content;
+}/*}}}*/
+
+function _generate_controller_struct_detail($struct_type)
+{/*{{{*/
+    $content = _get_struct_controller_from_extension('detail', $struct_type);
+
+    otherwise($content, '没找到 '.$struct_type.' 的 detail 模版');
+
+    return $content;
+}/*}}}*/
+
+function _generate_controller_struct_update($struct_type)
+{/*{{{*/
+    $content = _get_struct_controller_from_extension('update', $struct_type);
+
+    otherwise($content, '没找到 '.$struct_type.' 的 update 模版');
+
+    return $content;
+}/*}}}*/
+
+function _generate_controller_struct_list($struct_type)
+{/*{{{*/
+    $content = _get_struct_controller_from_extension('list', $struct_type);
 
     otherwise($content, '没找到 '.$struct_type.' 的 list 模版');
 

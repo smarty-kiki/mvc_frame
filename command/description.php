@@ -45,6 +45,16 @@ function _get_struct_template_from_extension($action, $type)
     return false;
 }/*}}}*/
 
+function _get_struct_controller_from_extension($action, $type)
+{/*{{{*/
+    $path = DESCRIPTION_CONTROLLER_EXTENSION_DIR.'/'.$action.'/struct/'.$type.'.php';
+    if (is_file($path)) {
+        return file_get_contents($path);
+    }
+
+    return false;
+}/*}}}*/
+
 function _get_page_template_from_extension($action)
 {/*{{{*/
     $path = DESCRIPTION_TEMPLATE_EXTENSION_DIR.'/'.$action.'/page.php';
@@ -57,7 +67,7 @@ function _get_page_template_from_extension($action)
 
 function _get_controller_template_from_extension($action)
 {/*{{{*/
-    $path = DESCRIPTION_CONTROLLER_EXTENSION_DIR.'/'.$action.'.php';
+    $path = DESCRIPTION_CONTROLLER_EXTENSION_DIR.'/'.$action.'/controller.php';
     if (is_file($path)) {
         return file_get_contents($path);
     }
