@@ -36,7 +36,7 @@
 <tbody>
 
     <form action='' method='POST'>
-@foreach ($entity_name::$struct_types as $struct => $type)
+@foreach ($entity_name::$struct_data_types as $struct => $type)
     <tr>
         <td>{{ array_key_exists($struct, $entity_name::$struct_display_names)? $entity_name::$struct_display_names[$struct]: $struct }}</td>
         <td>

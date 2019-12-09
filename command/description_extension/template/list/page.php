@@ -36,7 +36,7 @@
 <thead>
     <tr>
         <th>ID</th>
-@foreach ($entity_name::$struct_types as $struct => $type)
+@foreach ($entity_name::$struct_data_types as $struct => $type)
         <th>{{ array_key_exists($struct, $entity_name::$struct_display_names)? $entity_name::$struct_display_names[$struct]: $struct }}</th>
 @endforeach
         <th>
@@ -44,21 +44,21 @@
         </th>
     </tr>
 </thead>
-    @^foreach (${{ english_word_pluralize($entity_name) }} as $id => ${{ $entity_name }})
+    @^^foreach (${{ english_word_pluralize($entity_name) }} as $id => ${{ $entity_name }})
     <tr>
-        <td>^{^{ $id ^}^}</td>
-@foreach ($entity_name::$struct_types as $struct => $type)
+        <td>^^{^^{ $id ^^}^^}</td>
+@foreach ($entity_name::$struct_data_types as $struct => $type)
         <td>
             {{ blade_eval(_generate_template_struct_list($type), ['entity_name' => $entity_name, 'struct' => $struct]) }}
         </td>
 @endforeach
         <td>
-            <a href='/{{ english_word_pluralize($entity_name) }}/update/^{^{ ${{ $entity_name }}->id ^}^}'>修改</a>
-            <a href='javascript:delete_^{^{ ${{ $entity_name }}->id ^}^}.submit();'>删除</a>
-            <form id='delete_^{^{ ${{ $entity_name }}->id ^}^}' action='/{{ english_word_pluralize($entity_name) }}/delete/^{^{ ${{ $entity_name }}->id ^}^}' method='POST'></form>
+            <a href='/{{ english_word_pluralize($entity_name) }}/update/^^{^^{ ${{ $entity_name }}->id ^^}^^}'>修改</a>
+            <a href='javascript:delete_^^{^^{ ${{ $entity_name }}->id ^^}^^}.submit();'>删除</a>
+            <form id='delete_^^{^^{ ${{ $entity_name }}->id ^^}^^}' action='/{{ english_word_pluralize($entity_name) }}/delete/^^{^^{ ${{ $entity_name }}->id ^^}^^}' method='POST'></form>
         </td>
     </tr>
-    @^endforeach
+    @^^endforeach
 <tbody>
 </tbody>
 </table>
