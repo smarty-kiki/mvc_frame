@@ -1,6 +1,12 @@
 if_get('/{{ english_word_pluralize($entity_name) }}/add', function ()
 {/*{^^{^^{*/
-    return render('{{ $entity_name }}/add');
+    return render('{{ $entity_name }}/add', [
+@foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
+@if ($relationship['relationship_type'] === 'belongs_to')
+        '{{ english_word_pluralize($attribute_name) }}' => dao('{{ $relationship['entity'] }}')->find_all(),
+@endif
+@endforeach
+    ]);
 });/*}}}*/
 
 if_post('/{{ english_word_pluralize($entity_name) }}/add', function ()
@@ -8,13 +14,13 @@ if_post('/{{ english_word_pluralize($entity_name) }}/add', function ()
 @php
 $param_infos = [];
 $setting_lines = [];
-foreach ($relationship_infos['relationships'] as $attritube_name => $relationship) {
+foreach ($relationship_infos['relationships'] as $attribute_name => $relationship) {
     $entity = $relationship['entity'];
     if ($relationship['relationship_type'] === 'belongs_to') {
         if ($relationship['association_type'] === 'composition') {
-            $param_infos[] = "input_entity('$entity', null, '$attritube_name"."_id')";
+            $param_infos[] = "input_entity('$entity', null, '$attribute_name"."_id')";
         } else {
-            $setting_lines[] = "$$entity_name->$attritube_name"."_id = input('$attritube_name"."_id')";
+            $setting_lines[] = "$$entity_name->$attribute_name = dao('$entity')->find('{$attribute_name}_id')";
         }
     }
 }

@@ -1,1 +1,1 @@
-<input type='number' name='{{ $struct }}'>
+<input type='number' name='{{ $struct_name }}'>

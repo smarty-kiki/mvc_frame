@@ -7,10 +7,10 @@ foreach ($entity_info['structs'] as $struct_name => $struct) {
     $inputs[] = $struct_name;
 }
 
-foreach ($relationship_infos['relationships'] as $attritube_name => $relationship) {
+foreach ($relationship_infos['relationships'] as $attribute_name => $relationship) {
 
     if ($relationship['relationship_type'] === 'belongs_to') {
-        $inputs[] = $attritube_name.'_id';
+        $inputs[] = $attribute_name.'_id';
     }
 
     foreach ($relationship['snaps'] as $structs) {

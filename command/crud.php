@@ -146,34 +146,40 @@ function _generate_controller_struct_list($struct_type)
     return $content;
 }/*}}}*/
 
-function _generate_view_add_file($entity_name)
+function _generate_view_add_file($entity_name, $entity_info, $relationship_infos)
 {/*{{{*/
     $template = _generate_page('add');
 
     $content = blade_eval($template, [
         'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
     ]);
 
     return str_replace('^^', '', $content);
 }/*}}}*/
 
-function _generate_view_update_file($entity_name)
+function _generate_view_update_file($entity_name, $entity_info, $relationship_infos)
 {/*{{{*/
     $template = _generate_page('update');
 
     $content = blade_eval($template, [
         'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
     ]);
 
     return str_replace('^^', '', $content);
 }/*}}}*/
 
-function _generate_view_list_file($entity_name)
+function _generate_view_list_file($entity_name, $entity_info, $relationship_infos)
 {/*{{{*/
     $template = _generate_page('list');
 
     $content = blade_eval($template, [
         'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
     ]);
 
     return str_replace('^^', '', $content);
@@ -197,9 +203,9 @@ command('crud:make-from-description', '通过描述文件生成 CRUD 控制器�
             "当前用户没有权限创建目录 $dir_name");
 
         $controller_file_string = _generate_controller_file($entity_name, $entity_info, $relationship_infos);
-        $view_add_file_string = _generate_view_add_file($entity_name);
-        $view_update_file_string = _generate_view_update_file($entity_name);
-        $view_list_file_string = _generate_view_list_file($entity_name);
+        $view_add_file_string = _generate_view_add_file($entity_name, $entity_info, $relationship_infos);
+        $view_update_file_string = _generate_view_update_file($entity_name, $entity_info, $relationship_infos);
+        $view_list_file_string = _generate_view_list_file($entity_name, $entity_info, $relationship_infos);
 
         // 写文件
         error_log($controller_file_string, 3, $controller_file = CONTROLLER_DIR.'/'.$entity_name.'.php'); echo $controller_file."\n";

@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
     <meta charset='UTF-8'>
-    <title>{{ $entity_name::$entity_display_name }}</title>
+    <title>{{ $entity_info['display_name'] }}</title>
     <style>
      table {
          font-family: verdana,arial,sans-serif;
@@ -36,8 +36,18 @@
 <thead>
     <tr>
         <th>ID</th>
-@foreach ($entity_name::$struct_data_types as $struct => $type)
-        <th>{{ array_key_exists($struct, $entity_name::$struct_display_names)? $entity_name::$struct_display_names[$struct]: $struct }}</th>
+@foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
+@if ($relationship['relationship_type'] === 'belongs_to')
+        <th>{{ $relationship['entity_display_name'] }}</th>
+@foreach ($relationship['snaps'] as $structs)
+@foreach ($structs as $struct_name => $struct)
+        <th>{{ $struct['display_name'] }}</th>
+@endforeach
+@endforeach
+@endif
+@endforeach
+@foreach ($entity_info['structs'] as $struct_name => $struct)
+        <th>{{ $struct['display_name'] }}</th>
 @endforeach
         <th>
             <a href='/{{ english_word_pluralize($entity_name) }}/add'>添加</a>
@@ -47,9 +57,21 @@
     @^^foreach (${{ english_word_pluralize($entity_name) }} as $id => ${{ $entity_name }})
     <tr>
         <td>^^{^^{ $id ^^}^^}</td>
-@foreach ($entity_name::$struct_data_types as $struct => $type)
+@foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
+@if ($relationship['relationship_type'] === 'belongs_to')
+        <td>^^{^^{ ${{ $entity_name }}->{{ $attribute_name }}->display_for_{{ $relationship['self_attribute_name'] }}_{{ $attribute_name }}() ^^}^^}</td>
+@foreach ($relationship['snaps'] as $structs),
+@foreach ($structs as $struct_name => $struct)
         <td>
-            {{ blade_eval(_generate_template_struct_list($type), ['entity_name' => $entity_name, 'struct' => $struct]) }}
+            {{ blade_eval(_generate_template_struct_list($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
+        </td>
+@endforeach
+@endforeach
+@endif
+@endforeach
+@foreach ($entity_info['structs'] as $struct_name => $struct)
+        <td>
+            {{ blade_eval(_generate_template_struct_list($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
         </td>
 @endforeach
         <td>
