@@ -240,7 +240,7 @@ $relationship_attribute_names = explode('.', $snap_relation_to_with_dot);
 @endforeach
 @else
         otherwise(
-            ${{ $attribute_name }} instanceof {{ $entity }} || 
+            ${{ $attribute_name }} instanceof {{ $entity }} ||
             ${{ $attribute_name }} instanceof null_entity,
         '{{ $attribute_name }} 类型必须为 {{ $entity }} 或者 null_entity');
 
