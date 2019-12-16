@@ -63,7 +63,7 @@
 @foreach ($relationship['snaps'] as $structs),
 @foreach ($structs as $struct_name => $struct)
         <td>
-            {{ blade_eval(_generate_template_struct_list($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
+            {{ blade_eval(_generate_template_data_type_list($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
         </td>
 @endforeach
 @endforeach
@@ -71,7 +71,7 @@
 @endforeach
 @foreach ($entity_info['structs'] as $struct_name => $struct)
         <td>
-            {{ blade_eval(_generate_template_struct_list($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
+            {{ blade_eval(_generate_template_data_type_list($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
         </td>
 @endforeach
         <td>

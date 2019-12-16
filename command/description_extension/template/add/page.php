@@ -57,7 +57,7 @@
     <tr>
         <td>{{ $struct['display_name'] }}</td>
         <td>
-            {{ blade_eval(_generate_template_struct_add($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
+            {{ blade_eval(_generate_template_data_type_add($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
         </td>
     </tr>
 @endforeach
