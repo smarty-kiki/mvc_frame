@@ -60,7 +60,7 @@
 @foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
 @if ($relationship['relationship_type'] === 'belongs_to')
         <td>^^{^^{ ${{ $entity_name }}->{{ $attribute_name }}->display_for_{{ $relationship['self_attribute_name'] }}_{{ $attribute_name }}() ^^}^^}</td>
-@foreach ($relationship['snaps'] as $structs),
+@foreach ($relationship['snaps'] as $structs)
 @foreach ($structs as $struct_name => $struct)
         <td>
             {{ blade_eval(_generate_template_data_type_list($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
