@@ -1,5 +1,5 @@
 <select name='{{ $struct_name }}'>
-@foreach ($entity_name::struct_formaters($struct) as $key => $value)
-    <option value='{{ $key }}'>{{ $value }}</option>
+@foreach ($struct['formater'] as $value => $description)
+    <option value='^^{^^{ {{ $entity_name }}::{{ strtoupper($struct_name.'_'.$value) }} ^^}^^}'>^^{^^{ {{ $entity_name }}::{{ strtoupper($struct_name) }}_MAPS[{{ $entity_name }}::{{ strtoupper($struct_name.'_'.$value) }}] ^^}^^}</option>
 @endforeach
 </select>

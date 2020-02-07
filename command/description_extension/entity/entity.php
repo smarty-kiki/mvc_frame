@@ -97,7 +97,7 @@ $struct_default = $struct['database_field']['default'];
 @if ($struct['data_type'] === 'enum')
 
 @foreach ($struct['formater'] as $value => $description)
-    const {{ strtoupper($struct_name.'_'.$value) }} = '{{ strtoupper($struct_name) }}';
+    const {{ strtoupper($struct_name.'_'.$value) }} = '{{ strtoupper($value) }}';
 @endforeach
 
     const {{ strtoupper($struct_name) }}_MAPS = [
