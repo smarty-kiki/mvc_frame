@@ -108,6 +108,22 @@ $struct_default = $struct['database_field']['default'];
 @endif
 @endforeach
 
+    public static $struct_is_required = [
+@foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
+@if ($relationship['relationship_type'] === 'belongs_to')
+        '{{ $attribute_name }}_id' => {{ $relationship['association_type'] === 'composition'? 'true': 'false' }},
+@foreach ($relationship['snaps'] as $structs)
+@foreach ($structs as $struct_name => $struct)
+        '{{ $struct_name }}' => {{ $struct['require']? 'true': 'false' }},
+@endforeach
+@endforeach
+@endif
+@endforeach
+@foreach ($entity_info['structs'] as $struct_name => $struct)
+        '{{ $struct_name }}' => {{ $struct['require']? 'true': 'false' }},
+@endforeach
+    ];
+
     public function __construct()
     {/*^^{^^{^^{*/
 @foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
@@ -199,6 +215,12 @@ foreach ($entity_info['structs'] as $struct_name => $struct) {
 
     public function get_{{ $struct_name }}_description()
     {/*^^{^^{^^{*/
+@if (! $struct['require'])
+        if ($this->{{ $struct_name }} === '') {
+            return '';
+        }
+
+@endif
         return self::{{ strtoupper($struct_name) }}_MAPS[$this->{{ $struct_name }}];
     }/*}}}*/
 @foreach ($struct['formater'] as $value => $description)
