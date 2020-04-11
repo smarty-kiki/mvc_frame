@@ -12,3 +12,5 @@ ln -fs $ROOT_DIR/project/config/production/nginx/mvc_frame.conf /etc/nginx/sites
 ln -fs $ROOT_DIR/project/config/production/supervisor/mvc_frame_queue_worker.conf /etc/supervisor/conf.d/mvc_frame_queue_worker.conf
 /usr/bin/supervisorctl update
 /usr/bin/supervisorctl restart mvc_frame_queue_worker:*
+
+rm -rf /var/www/mvc_frame/view/blade/*.php
