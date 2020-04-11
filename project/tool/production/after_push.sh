@@ -13,4 +13,5 @@ ln -fs $ROOT_DIR/project/config/production/supervisor/mvc_frame_queue_worker.con
 /usr/bin/supervisorctl update
 /usr/bin/supervisorctl restart mvc_frame_queue_worker:*
 
+chmod 777 /var/www/mvc_frame/view/blade
 rm -rf /var/www/mvc_frame/view/blade/*.php
