@@ -264,7 +264,7 @@ $relationship_attribute_names = explode('.', $snap_relation_to_with_dot);
         otherwise(
             ${{ $attribute_name }} instanceof {{ $entity }} ||
             ${{ $attribute_name }} instanceof null_entity,
-        '{{ $attribute_name }} 类型必须为 {{ $entity }} 或者 null_entity');
+            '{{ $attribute_name }} 类型必须为 {{ $entity }} 或者 null_entity');
 
         if (${{ $attribute_name }} instanceof {{ $entity }}) {
 @foreach ($structs as $struct_name => $struct)
