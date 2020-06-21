@@ -24,9 +24,7 @@ then
                 ENV=$env /usr/bin/php $ROOT_DIR/public/cli.php migrate:reset
 
                 rm -rf $ROOT_DIR/view/$entity_name
-                #rm -rf $ROOT_DIR/domain/dao/$entity_name.php
-                #rm -rf $ROOT_DIR/domain/entity/$entity_name.php
-                rm -rf $ROOT_DIR/command/migration/*_$entity_name.sql
+                rm -rf $ROOT_DIR/command/migration/*[0-9]_$entity_name.sql
                 rm -rf $ROOT_DIR/controller/$entity_name.php
 
                 grep -v "'\/$entity_name\." $ROOT_DIR/public/index.php > /tmp/index.php
