@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     'midwares' => [
         'default' => 'local',
         'idgenter' => 'local',
@@ -12,14 +11,16 @@ return [
         'local' => [
             //
             // Create connection with:
-            // 'sock' => '/var/run/redis.sock',
+            //  'name' => 'name from ini'
             // Or
-            //  'host' => '127.0.0.1',
-            //  'port' => 6379,
+            // 'cluster' => [
+            //     '127.0.0.1' => 6379,
+            // ],
             //
 
-            'host' => '127.0.0.1',
-            'port' => 6379,
+            'cluster' => [
+                '127.0.0.1' => 6379,
+            ],
 
             'timeout' => 1,
 
@@ -34,5 +35,5 @@ return [
                 Redis::OPT_SERIALIZER => Redis::SERIALIZER_PHP,
             ],
         ],
-    ],
+    ]
 ];

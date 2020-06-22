@@ -2,10 +2,12 @@
 
 return [
     'midwares' => [
+        'entity' => 'local',
         'default' => 'local',
     ],
 
     'resources' => [
+
         'local' => [
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
@@ -22,6 +24,7 @@ return [
             'schema' => [
                 '/var/run/mysqld/mysqld.sock',
             ],
+
             'options' => [
                 PDO::ATTR_CASE => PDO::CASE_NATURAL,
                 PDO::ATTR_ORACLE_NULLS => PDO::NULL_NATURAL,

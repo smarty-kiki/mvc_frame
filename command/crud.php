@@ -208,10 +208,11 @@ command('crud:make-from-description', '通过描述文件生成 CRUD 控制器�
         $view_list_file_string = _generate_view_list_file($entity_name, $entity_info, $relationship_infos);
 
         // 写文件
-        error_log($controller_file_string, 3, $controller_file = CONTROLLER_DIR.'/'.$entity_name.'.php'); echo $controller_file."\n";
-        error_log($view_add_file_string, 3, $file = $dir_name.'/add.php'); echo $file."\n";
-        error_log($view_update_file_string, 3, $file = $dir_name.'/update.php'); echo $file."\n";
-        error_log($view_list_file_string, 3, $file = $dir_name.'/list.php'); echo $file."\n";
-        echo "\n将 $controller_file 加入到 public/index.php 即可响应请求\n";
+        error_log($controller_file_string, 3, $controller_file = CONTROLLER_DIR.'/'.$entity_name.'.php'); echo "generate $controller_file success!\n";
+        error_log($view_add_file_string, 3, $file = $dir_name.'/add.php'); echo "generate ".$file." success!\n";
+        error_log($view_update_file_string, 3, $file = $dir_name.'/update.php'); echo "generate ".$file." success!\n";
+        error_log($view_list_file_string, 3, $file = $dir_name.'/list.php'); echo "generate ".$file." success!\n";
+
+        echo "todo ".ROOT_DIR."/public/index.php include $controller_file\n";
     }
 });/*}}}*/

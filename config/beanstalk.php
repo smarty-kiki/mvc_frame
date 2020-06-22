@@ -1,8 +1,10 @@
 <?php
 
 return [
+
     'midwares' => [
         'default' => 'local',
+        'queue' => 'local',
     ],
 
     'resources' => [
