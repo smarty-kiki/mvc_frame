@@ -283,9 +283,6 @@ function _migration_detail_diff_to_sql($new, $old)
                         || (
                             (
                                 $new_field['Collation'] !== $old_field['Collation']
-//                                && ! (
-//                                    $new_field['Collation'] == $new_table['Collation'] && $old_field['Collation'] == $old['table'][$table_name]['Collation']
-//                                )
                             )
                             || (
                                 $new_field['Collation'] !== $new_table['Collation'] && not_null($new_field['Collation'])
