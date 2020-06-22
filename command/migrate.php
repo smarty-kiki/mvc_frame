@@ -106,13 +106,19 @@ function _migration_reset()
 
         $filepath = MIGRATION_DIR.'/'.$filename;
 
-        list($ups, $downs) = _migration_file_explode($filepath);
+        if (is_file($filepath)) {
 
-        foreach ($downs as $down) {
-            db_structure($down);
+            list($ups, $downs) = _migration_file_explode($filepath);
+
+            foreach ($downs as $down) {
+                db_structure($down);
+            }
+
+            echo "migrate $filepath success down!\n";
+        } else {
+
+            echo "migrate $filepath failure down!\n";
         }
-
-        echo "migrate $filepath success down!\n";
     }
 
     db_delete('delete from '.MIGRATION_TABLE);
@@ -296,13 +302,18 @@ function _migration_detail_diff_to_sql($new, $old)
                 }
             }
 
+            $last_field = '';
             foreach ($new['field'][$table_name] as $new_field_name => $new_field) {
 
                 // add new field
                 if (! isset($old['field'][$table_name][$new_field_name])) {
 
-                    $sqls[] = "alter table `$table_name` add ".$field_sql_string($new_field, $new_table)." after `{$new_field['After']}`";
+                    $after = $last_field? " after `$last_field`": ' first';
+
+                    $sqls[] = "alter table `$table_name` add ".$field_sql_string($new_field, $new_table).$after;
                 }
+
+                $last_field = $new_field_name;
             }
 
             // change index
@@ -414,13 +425,19 @@ command('migrate:rollback', '回滚最后一次 migrate', function ()
     foreach ($last_batch_migrations as $filename) {
         $filepath = MIGRATION_DIR.'/'.$filename;
 
-        list($ups, $downs) = _migration_file_explode($filepath);
+        if (is_file($filepath)) {
 
-        foreach ($downs as $down) {
-            db_structure($down);
+            list($ups, $downs) = _migration_file_explode($filepath);
+
+            foreach ($downs as $down) {
+                db_structure($down);
+            }
+
+            echo "migrate $filepath success down!\n";
+        } else {
+
+            echo "migrate $filepath failure down!\n";
         }
-
-        echo "migrate $filepath success down!\n";
     }
 
     db_delete('delete from '.MIGRATION_TABLE.' where batch = :batch', [
@@ -472,34 +489,29 @@ command('migrate:reset', '回滚所有 migrate', function ()
 
 command('migrate:generate-diff', '生成 tmp migration 与正式 migration 的差别变更', function ()
 {/*{{{*/
-    $continue = command_read_bool("\033[31m注意，这个操作会初始化数据库的结构，确认继续?\033[0m");
+    _migration_reset();
+    _migration_run(_migration_files());
+    $old_db_detail = _migration_db_detail();
 
-    if ($continue) {
+    _migration_reset();
+    _migration_run(_migration_tmp_files());
+    $new_db_detail = _migration_db_detail();
+
+    $up_sqls = _migration_detail_diff_to_sql($new_db_detail, $old_db_detail);
+    $down_sqls = _migration_detail_diff_to_sql($old_db_detail, $new_db_detail);
+
+    if ($up_sqls && $down_sqls) {
+
+        $file = migration_file_path('diff_generated');
+        _migration_file_implode($up_sqls, $down_sqls, $file);
+        echo "generate $file success!\n";
 
         _migration_reset();
         _migration_run(_migration_files());
-        $old_db_detail = _migration_db_detail();
+    } else {
+        echo "\033[31mno different!\n\033[0m";
 
         _migration_reset();
-        _migration_run(_migration_tmp_files());
-        $new_db_detail = _migration_db_detail();
-
-        $up_sqls = _migration_detail_diff_to_sql($new_db_detail, $old_db_detail);
-        $down_sqls = _migration_detail_diff_to_sql($old_db_detail, $new_db_detail);
-
-        if ($up_sqls && $down_sqls) {
-
-            $file = migration_file_path('diff_generated');
-            _migration_file_implode($up_sqls, $down_sqls, $file);
-            echo "generate $file success!\n";
-
-            _migration_reset();
-            _migration_run(_migration_files());
-        } else {
-            echo "\033[31mno different!\n\033[0m";
-
-            _migration_reset();
-            _migration_run(_migration_files());
-        }
+        _migration_run(_migration_files());
     }
 });/*}}}*/
