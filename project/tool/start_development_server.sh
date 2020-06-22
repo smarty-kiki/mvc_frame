@@ -8,7 +8,7 @@ sudo docker run --rm -ti -p 80:80 -p 8080:8080 -p 3306:3306 --name mvc_frame \
     -v $ROOT_DIR/../frame:/var/www/frame \
     -v $ROOT_DIR/:/var/www/mvc_frame \
     -v $ROOT_DIR/project/config/development/nginx/mvc_frame.conf:/etc/nginx/sites-enabled/default \
-    -v $ROOT_DIR/project/config/development/supervisor/queue_worker.conf:/etc/supervisor/conf.d/queue_worker.conf \
+    -v $ROOT_DIR/project/config/development/supervisor/mvc_frame_queue_worker.conf:/etc/supervisor/conf.d/queue_worker.conf \
     -e 'PRJ_HOME=/var/www/mvc_frame' \
     -e 'ENV=development' \
     -e 'TIMEZONE=Asia/Shanghai' \
