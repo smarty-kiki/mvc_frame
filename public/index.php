@@ -16,7 +16,16 @@ if_has_exception(function ($ex) {
 
     log_exception($ex);
 
-    return $ex->getMessage();
+    if (is_ajax()) {
+
+        return json([
+            'code' => $ex->getCode() ?: 500,
+            'msg'  => $ex->getMessage(),
+            'data' => [],
+        ]);
+    } else {
+        return $ex->getMessage();
+    }
 });
 
 if_verify(function ($action, $args) {
