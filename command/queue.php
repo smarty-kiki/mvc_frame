@@ -60,12 +60,12 @@ command('queue:peek-buried', '处理 buried 状态的任务', function ()
             $action = command_read('Action', 0, ['kick', 'delete']);
 
             switch ($action) {
-            case 'kick':
-                _beanstalk_kick_job($fp, $job_id);
-                break;
-            case 'delete':
-                _beanstalk_delete($fp, $job_id);
-                break;
+                case 'kick':
+                    _beanstalk_kick_job($fp, $job_id);
+                    break;
+                case 'delete':
+                    _beanstalk_delete($fp, $job_id);
+                    break;
             }
         } catch (throwable $ex) {
             echo "\033[31m".$ex->getMessage()."\033[0m\n";
