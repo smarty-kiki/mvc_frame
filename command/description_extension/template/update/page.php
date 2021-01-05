@@ -55,7 +55,7 @@
 @endforeach
 @foreach ($entity_info['structs'] as $struct_name => $struct)
     <tr>
-        <td>{{ $struct['display_name'] }}</td>
+        <td>{{ $struct['require']?'<span style="color:red;">*</span>':'' }}{{ $struct['display_name'] }}</td>
         <td>
             {{ blade_eval(_generate_template_data_type_update($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
         </td>
