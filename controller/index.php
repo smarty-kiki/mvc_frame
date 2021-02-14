@@ -3,6 +3,8 @@
 if_get('/', function ()
 {
     return render('index/index', [
-        'text' => 'hello world',
+        'title' => 'hello world',
+        'url_infos' => [
+        ],
     ]);
 });

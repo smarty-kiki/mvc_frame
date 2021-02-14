@@ -53,13 +53,18 @@
     </tr>
 @endif
 @endforeach
+@foreach ($entity_info['struct_groups'] as $struct_group)
+{{ blade_eval(_generate_template_struct_group_update($struct_group['type']), ['entity_name' => $entity_name, 'struct_group_info' => $struct_group['struct_group_info'], 'struct_group_structs' => $struct_group['structs'], 'struct_name_map' => $struct_group['struct_name_maps'], 'structs' => $entity_info['structs']]) }}
+@endforeach
 @foreach ($entity_info['structs'] as $struct_name => $struct)
+@if (! isset($struct['struct_group_type']))
     <tr>
         <td>{{ $struct['require']?'<span style="color:red;">*</span>':'' }}{{ $struct['display_name'] }}</td>
         <td>
             {{ blade_eval(_generate_template_data_type_update($struct['data_type']), ['entity_name' => $entity_name, 'struct_name' => $struct_name, 'struct' => $struct]) }}
         </td>
     </tr>
+@endif
 @endforeach
     <tr>
         <td>

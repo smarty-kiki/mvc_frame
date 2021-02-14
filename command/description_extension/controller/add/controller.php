@@ -67,5 +67,5 @@ foreach ($repeat_check_structs as $struct_name) {
 @endforeach
 @endif
 
-    return redirect('/{{ english_word_pluralize($entity_name) }}');
+    return redirect(input('refer_url', '/{{ english_word_pluralize($entity_name) }}'));
 });/*}}}*/

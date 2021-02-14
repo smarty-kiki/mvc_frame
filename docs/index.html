@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>mvc_frame</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="keywords" content="Keywords">
+  <meta name="description" content="Description">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <link rel="stylesheet" href="./static/css/vue.css">
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+        name: 'mvc_frame',
+        search: {
+            maxAge: 86400000,
+            paths: 'auto',
+            placeholder: '这里搜索',
+            noData: '没有相关结果',
+            depth: 4,
+        },
+        copyCode: {
+            buttonText : '点击复制',
+            errorText  : '有 bug',
+            successText: '已复制'
+        },
+        repo: 'http://github.com/smarty-kiki/mvc_frame',
+        notFoundPage: '404.md',
+        coverpage: 'coverpage.md',
+        loadSidebar: 'sidebar.md',
+        homepage: 'intro.md?id=开始上手',
+        mergeNavbar: true,
+        subMaxLevel: 4,
+    }
+  </script>
+  <script src="./static/js/docsify.min.js"></script>
+  <script src="./static/js/prism-php.min.js"></script>
+  <script src="./static/js/prism-sql.min.js"></script>
+  <script src="./static/js/prism-json.min.js"></script>
+  <script src="./static/js/prism-bash.min.js"></script>
+  <script src="./static/js/mermaid.js"></script>
+  <script src="./static/js/docsify-mermaid.js"></script>
+  <script>mermaid.initialize({ startOnLoad: true });</script>
+  <script src="./static/js/search.min.js"></script>
+  <script src="./static/js/zoom-image.min.js"></script>
+  <script src="./static/js/docsify-copy-code.min.js"></script>
+  <script src="./static/js/docsify-pagination.min.js"></script>
+</body>
+</html>
