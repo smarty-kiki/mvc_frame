@@ -55,17 +55,23 @@ then
             /bin/sed -i "/init\ controller/a\include\ CONTROLLER_DIR\.\'\/$entity_name\.php\'\;" $ROOT_DIR/public/index.php
             echo include $ROOT_DIR/controller/$entity_name.php success!
 
+            rm -rf $ROOT_DIR/docs/page/$entity_name.md
+            grep -v "\(page/$entity_name.md\)" $ROOT_DIR/docs/sidebar.md > /tmp/sidebar.md
+            mv /tmp/sidebar.md $ROOT_DIR/docs/sidebar.md
             rm -rf $ROOT_DIR/docs/api/$entity_name.md
             grep -v "\(api/$entity_name.md\)" $ROOT_DIR/docs/sidebar.md > /tmp/sidebar.md
             mv /tmp/sidebar.md $ROOT_DIR/docs/sidebar.md
             grep -v "\($entity_name\)" $ROOT_DIR/docs/coverpage.md > /tmp/coverpage.md
             mv /tmp/coverpage.md $ROOT_DIR/docs/coverpage.md
+            echo delete $ROOT_DIR/docs/page/$entity_name.md success!
             echo delete $ROOT_DIR/docs/api/$entity_name.md success!
 
             ENV=$env /usr/bin/php $ROOT_DIR/public/cli.php crud:make-docs-from-description --entity_name=$entity_name
             menu_name=`cat $ROOT_DIR/domain/description/$entity_name.yml | head -n 2 | tail -n 1 | cut -d ' ' -f 2`
+            /bin/sed -i "/页面文档/a\\ \ \-\ \[$menu_name\]\(page\/$entity_name\.md\)" $ROOT_DIR/docs/sidebar.md
             /bin/sed -i "/接口文档/a\\ \ \-\ \[$menu_name\]\(api\/$entity_name\.md\)" $ROOT_DIR/docs/sidebar.md
             /bin/sed -i "/系统的能力/a\\-\ $menu_name管理\ \($entity_name\)" $ROOT_DIR/docs/coverpage.md
+            echo include $ROOT_DIR/docs/page/$entity_name.md success!
             echo include $ROOT_DIR/docs/api/$entity_name.md success!
 
 
@@ -102,11 +108,15 @@ then
             rm -rf $ROOT_DIR/view/$entity_name
             echo delete $ROOT_DIR/view/$entity_name/*.php success!
 
+            rm -rf $ROOT_DIR/docs/page/$entity_name.md
+            grep -v "\(page/$entity_name.md\)" $ROOT_DIR/docs/sidebar.md > /tmp/sidebar.md
+            mv /tmp/sidebar.md $ROOT_DIR/docs/sidebar.md
             rm -rf $ROOT_DIR/docs/api/$entity_name.md
             grep -v "\(api/$entity_name.md\)" $ROOT_DIR/docs/sidebar.md > /tmp/sidebar.md
             mv /tmp/sidebar.md $ROOT_DIR/docs/sidebar.md
             grep -v "\($entity_name\)" $ROOT_DIR/docs/coverpage.md > /tmp/coverpage.md
             mv /tmp/coverpage.md $ROOT_DIR/docs/coverpage.md
+            echo delete $ROOT_DIR/docs/page/$entity_name.md success!
             echo delete $ROOT_DIR/docs/api/$entity_name.md success!
 
             grep -v "'$entity_name'" $ROOT_DIR/controller/index.php > /tmp/controller_index.php

@@ -257,6 +257,72 @@ function _generate_controller_struct_group_list($struct_group_type)
     return $content;
 }/*}}}*/
 
+function _generate_docs_page_file($entity_name, $entity_info, $relationship_infos)
+{/*{{{*/
+    $content = _get_docs_page_template_from_extension('list');
+
+    otherwise($content, '没找到 docs/page 的 list 模版');
+
+    $list_content = blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
+    ]);
+
+    $content = _get_docs_page_template_from_extension('add');
+
+    otherwise($content, '没找到 docs/page 的 add 模版');
+
+    $add_content = blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
+    ]);
+
+    $content = _get_docs_page_template_from_extension('detail');
+
+    otherwise($content, '没找到 docs/page 的 detail 模版');
+
+    $detail_content = blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
+    ]);
+
+    $content = _get_docs_page_template_from_extension('update');
+
+    otherwise($content, '没找到 docs/page 的 update 模版');
+
+    $update_content = blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
+    ]);
+
+    $content = _get_docs_page_template_from_extension('delete');
+
+    otherwise($content, '没找到 docs/page 的 delete 模版');
+
+    $delete_content = blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
+    ]);
+
+    $template = "# {$entity_info['display_name']}  
+{$entity_info['description']}
+
+%s
+%s
+%s
+%s
+%s";
+
+    $content = sprintf($template, $list_content, $add_content, $detail_content, $update_content, $delete_content);
+
+    return str_replace('^^', '', $content);
+}/*}}}*/
+
 function _generate_docs_api_file($entity_name, $entity_info, $relationship_infos)
 {/*{{{*/
     $content = _get_docs_api_template_from_extension('list');
@@ -437,9 +503,16 @@ command('crud:make-docs-from-description', '通过描述文件生成 CRUD 相关
 
         $relationship_infos = description_get_relationship_with_snaps_by_entity($entity_name);
 
+        $docs_page_file_string = _generate_docs_page_file($entity_name, $entity_info, $relationship_infos);
+
         $docs_api_file_string = _generate_docs_api_file($entity_name, $entity_info, $relationship_infos);
 
         // 写文件
+        $docs_page_file_relative_path = 'page/'.$entity_name.'.md';
+        error_log($docs_page_file_string, 3, $docs_page_file = DOCS_DIR.'/'.$docs_page_file_relative_path);
+        echo "generate $docs_page_file success!\n";
+        echo "todo ".DOCS_DIR."/sidebar.md include $docs_page_file_relative_path\n";
+
         $docs_api_file_relative_path = 'api/'.$entity_name.'.md';
         error_log($docs_api_file_string, 3, $docs_api_file = DOCS_DIR.'/'.$docs_api_file_relative_path);
         echo "generate $docs_api_file success!\n";

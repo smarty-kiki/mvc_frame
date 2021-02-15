@@ -111,6 +111,16 @@ function _get_struct_group_docs_api_from_extension($action, $data_type)
     return false;
 }/*}}}*/
 
+function _get_docs_page_template_from_extension($action)
+{/*{{{*/
+    $path = DESCRIPTION_DOCS_EXTENSION_DIR.'/page/'.$action.'/docs.php';
+    if (is_file($path)) {
+        return file_get_contents($path);
+    }
+
+    return false;
+}/*}}}*/
+
 function _get_docs_api_template_from_extension($action)
 {/*{{{*/
     $path = DESCRIPTION_DOCS_EXTENSION_DIR.'/api/'.$action.'/docs.php';
