@@ -9,13 +9,11 @@ filenames=$(basename "$2")
 all_filenames=`ls $ROOT_DIR/domain/description/`
 
 diff_dir=/tmp/description
+
 controller_diff_dir=$diff_dir/controller
 view_diff_dir=$diff_dir/view
 view_diff_old_dir=$view_diff_dir/old
 view_diff_new_dir=$view_diff_dir/new
-mkdir -p $controller_diff_dir
-mkdir -p $view_diff_old_dir
-mkdir -p $view_diff_new_dir
 
 echog()
 {
@@ -27,17 +25,18 @@ alias echo_filter='column -t | perl -pe "s/(^migrate|^include)|(^delete|^uninclu
 if [ "$event" = "INIT" ]
 then
     (
+    rm -rf $diff_dir
+    mkdir -p $controller_diff_dir
+    mkdir -p $view_diff_old_dir
+    mkdir -p $view_diff_new_dir
     for filename in $all_filenames
     do
         entity_name=${filename%.*}
 
         controller_file_old=$controller_diff_dir/$entity_name.php.old
-        controller_file_new=$controller_diff_dir/$entity_name.php.new
-        rm -rf $controller_file_old $controller_file_new
         output_controller_file=`ENV=$env /usr/bin/php $ROOT_DIR/public/cli.php crud:make-controller-from-description --entity_name=$entity_name --output_file=$controller_file_old`
         echo init $output_controller_file success!
 
-        rm -rf $view_diff_old_dir/$entity_name $view_diff_new_dir/$entity_name
         output_view_files=`ENV=$env /usr/bin/php $ROOT_DIR/public/cli.php crud:make-page-from-description --entity_name=$entity_name --output_dir=$view_diff_old_dir`
         for output_view_file in $output_view_files
         do
@@ -67,8 +66,8 @@ then
             rm -rf $ROOT_DIR/command/migration/tmp/*[0-9]_$entity_name.sql
             echo delete $ROOT_DIR/command/migration/tmp/*_$entity_name.sql success!
 
-            ENV=$env /usr/bin/php $ROOT_DIR/public/cli.php entity:make-from-description --entity_name=$entity_name
-            /bin/bash $ROOT_DIR/project/tool/classmap.sh $ROOT_DIR/domain
+            entity_files=`ENV=$env /usr/bin/php $ROOT_DIR/public/cli.php entity:make-from-description --entity_name=$entity_name`
+            for entity_file in $entity_files; do echo generate $entity_file success!; done
 
             rm -rf $ROOT_DIR/docs/entity/$entity_name.md
             rm -rf $ROOT_DIR/docs/entity/relationship.md
@@ -102,10 +101,9 @@ then
             echo generate $output_controller_file success!
             if [ -r $controller_file_new ]
             then
-                cp $controller_file_new $controller_file_old
-
                 if [ ! -r $controller_file_old ] || test "`diff -u $controller_file $controller_file_old`"
                 then
+                    cp $controller_file_new $controller_file_old
                     controller_file_diff_str=`diff -u $controller_file_new $controller_file`
                     if test "$controller_file_diff_str"
                     then
@@ -115,6 +113,7 @@ then
                     rm $controller_file_new
                     echo delete $controller_file_new success!
                 else
+                    cp $controller_file_new $controller_file_old
                     cp $controller_file_new $controller_file
                     echo generate $controller_file success!
 
@@ -131,7 +130,7 @@ then
             view_file_dir=$view_file_root_dir/$entity_name
             view_file_diff_dir=$view_file_dir.diff
             output_view_file_dir=$view_file_root_dir
-            if [ -d $output_view_file_dir ]
+            if [ -d $view_file_dir ]
             then
                 output_view_file_dir=$view_diff_new_dir
                 output_view_files=`ENV=$env /usr/bin/php $ROOT_DIR/public/cli.php crud:make-page-from-description --entity_name=$entity_name --output_dir=$output_view_file_dir`
@@ -139,23 +138,23 @@ then
                 output_view_files=`ENV=$env /usr/bin/php $ROOT_DIR/public/cli.php crud:make-page-from-description --entity_name=$entity_name --output_dir=$output_view_file_dir`
                 if [ -d $view_file_diff_old_dir ]
                 then
-                    cp -r $output_view_file_dir/* $view_file_diff_old_dir/
+                    cp -r $view_file_dir/* $view_file_diff_old_dir/
                 else
-                    cp -r $output_view_file_dir $view_file_diff_old_dir
+                    cp -r $view_file_dir $view_file_diff_old_dir
                 fi
             fi
             for output_view_file in $output_view_files; do echo generate $output_view_file success!; done
             if [ -d $view_file_diff_new_dir ]
             then
-                if [ -d $view_file_diff_old_dir ]
-                then
-                    cp -r $view_file_diff_new_dir/* $view_file_diff_old_dir/
-                else
-                    cp -r $view_file_diff_new_dir $view_file_diff_old_dir
-                fi
-
                 if [ ! -d $view_file_diff_old_dir ] || test "`diff -u $view_file_dir $view_file_diff_old_dir`"
                 then
+                    if [ -d $view_file_diff_old_dir ]
+                    then
+                        cp -r $view_file_diff_new_dir/* $view_file_diff_old_dir/
+                    else
+                        cp -r $view_file_diff_new_dir $view_file_diff_old_dir
+                    fi
+
                     for view_file in `ls $view_file_diff_new_dir`
                     do
                         target_view_file=$view_file_dir/$view_file
@@ -175,6 +174,13 @@ then
                     rm -rf $view_file_diff_new_dir
                     echo delete $view_file_diff_new_dir success!
                 else
+                    if [ -d $view_file_diff_old_dir ]
+                    then
+                        cp -r $view_file_diff_new_dir/* $view_file_diff_old_dir/
+                    else
+                        cp -r $view_file_diff_new_dir $view_file_diff_old_dir
+                    fi
+
                     if [ -d $view_file_dir ]
                     then
                         cp -r $view_file_diff_new_dir/* $view_file_dir/

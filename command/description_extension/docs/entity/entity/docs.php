@@ -18,12 +18,12 @@ entity ..> Serializable
 {{ $entity_name }} --> entity
 @foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
 @if ($relationship['relationship_type'] === 'belongs_to')
-{{ $entity_name }} "{{ $relationship['reverse_relationship_type'] === 'has_many'? '*':'1' }}" <--{{ $relationship['association_type'] === 'composition'? '*': 'o' }} "1" {{ $relationship['entity'] }} : {{ english_word_camelize($relationship['association_type']) }}  
+{{ $entity_name }} "{{ $relationship['reverse_relationship_type'] === 'has_many'? '*':'1' }}" <--{{ $relationship['require']? '*': 'o' }} "1" {{ $relationship['entity'] }} : {{ $attribute_name }}  
 @php
 $diagram_infos[] = $attribute_name.'_id';
 @endphp
 @else
-{{ $entity_name }} "1" {{ $relationship['association_type'] === 'composition'? '*': 'o' }}--> "{{ $relationship['relationship_type'] === 'has_many'? '*':'1' }}" {{ $relationship['entity'] }} : {{ english_word_camelize($relationship['association_type']) }}  
+{{ $entity_name }} "1" {{ $relationship['require']? '*': 'o' }}--> "{{ $relationship['relationship_type'] === 'has_many'? '*':'1' }}" {{ $relationship['entity'] }} : {{ $attribute_name }}  
 @endif
 @foreach ($relationship['snaps'] as $structs)
 @foreach ($structs as $struct_name => $struct)
@@ -63,12 +63,12 @@ $diagram_infos = [
 erDiagram
 @foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
 @if ($relationship['relationship_type'] === 'belongs_to')
-    {{ $entity_name }} {{ $relationship['reverse_relationship_type'] === 'has_many'? '}': '|' }}{{ $relationship['association_type'] === 'composition'? '|': 'o' }}--|| {{ $relationship['entity'] }} : {{ english_word_camelize($relationship['association_type']) }}  
+    {{ $entity_name }} {{ $relationship['reverse_relationship_type'] === 'has_many'? '}': '|' }}{{ $relationship['require']? '|': 'o' }}--|| {{ $relationship['entity'] }} : {{ $attribute_name }}  
 @php
 $diagram_infos[$attribute_name.'_id'] = 'id';
 @endphp
 @else
-    {{ $entity_name }} ||--{{ $relationship['association_type'] === 'composition'? '|': 'o' }}{{ $relationship['relationship_type'] === 'has_many'? '{':'|' }} {{ $relationship['entity'] }} : {{ english_word_camelize($relationship['association_type']) }}  
+    {{ $entity_name }} ||--{{ $relationship['require']? '|': 'o' }}{{ $relationship['relationship_type'] === 'has_many'? '{':'|' }} {{ $relationship['entity'] }} : {{ $attribute_name }}  
 @endif
 @foreach ($relationship['snaps'] as $structs)
 @foreach ($structs as $struct_name => $struct)
@@ -107,7 +107,7 @@ $diagram_infos[$struct_name] = $struct['data_type'];
 |delete_time|datetime|无需|删除时间|会自动维护，无需赋值|
 @foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
 @if ($relationship['relationship_type'] === 'belongs_to')
-|{{ $attribute_name }}|[{{ $relationship['entity'] }}](entity/{{ $relationship['entity'] }}.md)|{{ $relationship['association_type'] === 'composition'?'必传':'可选' }}|关联关系|{{ $entity_info['display_name'] }}所属的{{ $relationship['entity_display_name'] }}|
+|{{ $attribute_name }}|[{{ $relationship['entity'] }}](entity/{{ $relationship['entity'] }}.md)|{{ $relationship['require']? '必传' :'可选' }}|关联关系|{{ $entity_info['display_name'] }}所属的{{ $relationship['entity_display_name'] }}|
 |{{ $attribute_name }}_id|id|无需|外键|{{ $entity_info['display_name'] }}所属的{{ $relationship['entity_display_name'] }}，此处为{{ $relationship['entity_display_name'] }}的`id`|
 @foreach ($relationship['snaps'] as $structs)
 @foreach ($structs as $struct_name => $struct)
@@ -138,7 +138,7 @@ $diagram_infos[$struct_name] = $struct['data_type'];
 
 |常量键名|常量值|常量含义|
 |----|----|----|
-@foreach ($struct['formater'] as $value => $description)
+@foreach ($struct['validator'] as $value => $description)
 |{{ $entity_name }}::{{ strtoupper($struct_name.'_'.$value) }}|{{ strtoupper($value) }}|{{ $entity_info['display_name'] }}{{ $struct['display_name'] }}{{ $description}}|
 @endforeach
 
@@ -147,7 +147,7 @@ $diagram_infos[$struct_name] = $struct['data_type'];
 |方法|作用|
 |----|----|
 |${{ $entity_name }}->get_{{ $struct_name }}_description()|获取{{ $entity_info['display_name'] }}的当前{{ $struct['display_name'] }}的文字描述|
-@foreach ($struct['formater'] as $value => $description)
+@foreach ($struct['validator'] as $value => $description)
 |${{ $entity_name }}->{{ $struct_name }}_is_{{ strtolower($value) }}()|判断当前{{ $struct['display_name'] }}是否是 `{{ $description }}`|
 |${{ $entity_name }}->set_{{ $struct_name }}_{{ strtolower($value) }}()|设置当前{{ $struct['display_name'] }}为 `{{ $description }}`|
 @endforeach

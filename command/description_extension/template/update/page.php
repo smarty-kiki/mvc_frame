@@ -42,7 +42,7 @@
         <td>{{ $relationship['entity_display_name'] }}</td>
         <td>
             <select name='{{ $attribute_name }}_id'>
-@if ($relationship['association_type'] === 'aggregation')
+@if ($relationship['require'])
             <option value='0'>无</option>
 @endif
             @^^foreach (${{ english_word_pluralize($attribute_name) }} as $id => ${{ $attribute_name }})

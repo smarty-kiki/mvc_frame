@@ -766,8 +766,7 @@ command('crud:make-docs-from-description', '通过描述文件生成 CRUD 相关
         // 写文件
         $docs_page_file_relative_path = 'page/'.$entity_name.'.md';
         error_log($docs_page_file_string, 3, $docs_page_file = DOCS_DIR.'/'.$docs_page_file_relative_path);
-        echo "generate $docs_page_file success!\n";
-        echo "todo ".DOCS_DIR."/sidebar.md include $docs_page_file_relative_path\n";
+        echo $docs_page_file."\n";
 
         $docs_api_file_relative_path = 'api/'.$entity_name.'.md';
         error_log($docs_api_file_string, 3, $docs_api_file = DOCS_DIR.'/'.$docs_api_file_relative_path);
