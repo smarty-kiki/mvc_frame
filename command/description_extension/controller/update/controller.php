@@ -15,12 +15,18 @@ if_get('/{{ english_word_pluralize($entity_name) }}/update/*', function (${{ $en
 
 if_post('/{{ english_word_pluralize($entity_name) }}/update/*', function (${{ $entity_name }}_id)
 {/*{^^{^^{*/
-@foreach ($entity_info['structs'] as $struct_name => $struct)
-    ${{ $struct_name }} = input('{{ $struct_name }}');
-@endforeach
+@php
+$list_infos = [];
+foreach ($entity_info['structs'] as $struct_name => $struct) {
+    $list_infos[] = "$struct_name";
+}
+@endphp
+@if ($list_infos)
+    list(${{ implode(', $', $list_infos) }}) = input_list('{{ implode("', '", $list_infos) }}');
 
+@endif
     ${{ $entity_name }} = dao('{{ $entity_name }}')->find(${{ $entity_name }}_id);
-    otherwise(${{ $entity_name }}->is_not_null(), '{{ $entity_name }} 不存在');
+    otherwise_error_code('{{ strtoupper($entity_name.'_NOT_FOUND') }}', ${{ $entity_name }}->is_not_null());
 
 @if ($entity_info['repeat_check_structs'])
 @php
@@ -33,23 +39,28 @@ foreach ($repeat_check_structs as $struct_name) {
 }
 @endphp
     $another_{{ $entity_name }} = dao('{{ $entity_name }}')->find_by_{{ implode('_and_', $repeat_check_structs) }}({{ implode(', ', $param_infos) }});
-    otherwise($another_{{ $entity_name }}->is_null() || $another_{{ $entity_name }}->id === ${{ $entity_name }}->id, '已经存在相同{{ implode('和', $msg_infos) }}的{{ $entity_info['display_name'] }} [ID: '.$another_{{ $entity_name }}->id.']');
-@endif
+    otherwise_error_code('{{ strtoupper($entity_name.'_DUPLICATED') }}', $another_{{ $entity_name }}->is_null() || $another_{{ $entity_name }}->id === ${{ $entity_name }}->id, [':{{ $entity_name }}_id' => $another_{{ $entity_name }}->id]);
 
+@endif
 @foreach ($relationship_infos['relationships'] as $attribute_name => $relationship)
 @php
 $entity = $relationship['entity'];
 @endphp
 @if ($relationship['relationship_type'] === 'belongs_to')
-@if ($relationship['association_type'] === 'composition')
-    ${{ $entity_name }}->{{ $attribute_name }} = input_entity('{{ $entity }}', null, '{{ $attribute_name }}_id');
+@if ($relationship['require'])
+    ${{ $entity_name }}->{{ $attribute_name }} = input_entity('{{ $entity }}', '{{ $attribute_name }}_id', true);
+
 @else
-    ${{ $entity_name }}->{{ $attribute_name }} = dao('{{ $entity }}')->find(input('{{ $attribute_name }}_id'));
+    ${{ $attribute_name }} = input_entity('{{ $entity }}', '{{ $attribute_name }}_id');
+    if (${{ $attribute_name }}->is_not_null()) {
+        ${{ $entity_name }}->{{ $attribute_name }} = ${{ $attribute_name }};
+    }
+
 @endif
 @endif
 @endforeach
 @foreach ($entity_info['structs'] as $struct_name => $struct)
-    ${{ $entity_name }}->{{ $struct_name }} = ${{ $struct_name }};
+    if (not_null(${{ $struct_name }})) { ${{ $entity_name }}->{{ $struct_name }} = ${{ $struct_name }}; }
 @endforeach
 
     return redirect('/{{ english_word_pluralize($entity_name) }}');

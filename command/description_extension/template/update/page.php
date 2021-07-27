@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
     <meta charset='UTF-8'>
-    <title>{{ $entity_info['display_name'] }}[^{^{ ${{ $entity_name }}->id ^}^}]修改</title>
+    <title>{{ $entity_info['display_name'] }}[{^^{ ${{ $entity_name }}->id }^^}]修改</title>
     <style>
      table {
          font-family: verdana,arial,sans-serif;

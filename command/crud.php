@@ -1,5 +1,213 @@
 <?php
 
+function _generate_error_code_file($entity_name, $entity_info, $relationship_infos)
+{/*{{{*/
+    $content = _get_error_code_template_from_extension();
+
+    otherwise($content, '没找到 error_code 模版');
+
+    $content = blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
+    ]);
+
+    $template = "<?php
+
+%s";
+
+    $content = sprintf($template, $content);
+
+    return str_replace('^^', '', $content);
+}/*}}}*/
+
+function _merge_error_code_content_by_annotate($entity_name, $content_outside, $content_inside)
+{/*{{{*/
+    $annotate_start = '/* generated '.$entity_name.' start */';
+    $annotate_end = '/* generated '.$entity_name.' end */';
+    $more_line = '//more';
+
+    $res_lines = [];
+
+    $inside_start = false;
+    $inside_focus = false;
+    $outside_focus = true;
+    $never_find_annotate = true;
+
+    foreach (explode("\n", $content_outside) as $outside_line) {
+
+        if (trim($outside_line) === $more_line && $never_find_annotate) {
+
+            foreach (explode("\n", $content_inside) as $inside_line) {
+
+                if ($inside_focus) {
+
+                    $res_lines[] = $inside_line;
+                }
+
+                if (trim($inside_line) === $annotate_start) {
+
+                    $res_lines[] = $inside_line;
+                    $inside_focus = true;
+                    $inside_start = true;
+                }
+
+                if (trim($inside_line) === $annotate_end) {
+
+                    $inside_focus = false;
+                    $inside_start = false;
+                    break;
+                }
+            }
+        }
+
+        if ($outside_focus) {
+
+            $res_lines[] = $outside_line;
+
+        } elseif ($inside_start) {
+
+            foreach (explode("\n", $content_inside) as $inside_line) {
+
+                if ($inside_focus) {
+
+                    $res_lines[] = $inside_line;
+                }
+
+                if (trim($inside_line) === $annotate_start) {
+
+                    $inside_focus = true;
+                }
+
+                if (trim($inside_line) === $annotate_end) {
+
+                    $inside_focus = false;
+                    $inside_start = false;
+                    break;
+                }
+            }
+        }
+
+        if (trim($outside_line) === $annotate_start) {
+
+            $outside_focus = false;
+            $inside_start = true;
+            $never_find_annotate = false;
+        }
+
+        if (trim($outside_line) === $annotate_end) {
+
+            $outside_focus = true;
+        }
+    }
+
+    return implode("\n", $res_lines);
+}/*}}}*/
+
+function _generate_error_code_docs_file($entity_name, $entity_info, $relationship_infos)
+{/*{{{*/
+    $content = _get_error_code_docs_template_from_extension();
+
+    otherwise($content, '没找到 docs/error_code 模版');
+
+    $content = blade_eval($content, [
+        'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
+    ]);
+
+    $template = "# 错误码
+
+%s";
+
+    $content = sprintf($template, $content);
+
+    return str_replace('^^', '', $content);
+}/*}}}*/
+
+function _merge_error_code_docs_content_by_annotate($entity_name, $content_outside, $content_inside)
+{/*{{{*/
+    $annotate_start = '[^_^]: '.$entity_name.'_start';
+    $annotate_end = '[^_^]: '.$entity_name.'_end';
+    $more_line = '[^_^]: more';
+
+    $res_lines = [];
+
+    $inside_start = false;
+    $inside_focus = false;
+    $outside_focus = true;
+    $never_find_annotate = true;
+
+    foreach (explode("\n", $content_outside) as $outside_line) {
+
+        if (trim($outside_line) === $more_line && $never_find_annotate) {
+
+            foreach (explode("\n", $content_inside) as $inside_line) {
+
+                if ($inside_focus) {
+
+                    $res_lines[] = $inside_line;
+                }
+
+                if (trim($inside_line) === $annotate_start) {
+
+                    $res_lines[] = $inside_line;
+                    $inside_focus = true;
+                    $inside_start = true;
+                }
+
+                if (trim($inside_line) === $annotate_end) {
+
+                    $inside_focus = false;
+                    $inside_start = false;
+                    break;
+                }
+            }
+        }
+
+        if ($outside_focus) {
+
+            $res_lines[] = $outside_line;
+
+        } elseif ($inside_start) {
+
+            foreach (explode("\n", $content_inside) as $inside_line) {
+
+                if ($inside_focus) {
+
+                    $res_lines[] = $inside_line;
+                }
+
+                if (trim($inside_line) === $annotate_start) {
+
+                    $inside_focus = true;
+                }
+
+                if (trim($inside_line) === $annotate_end) {
+
+                    $inside_focus = false;
+                    $inside_start = false;
+                    break;
+                }
+            }
+        }
+
+        if (trim($outside_line) === $annotate_start) {
+
+            $outside_focus = false;
+            $inside_start = true;
+            $never_find_annotate = false;
+        }
+
+        if (trim($outside_line) === $annotate_end) {
+
+            $outside_focus = true;
+        }
+    }
+
+    return implode("\n", $res_lines);
+}/*}}}*/
+
 function _generate_page($action)
 {/*{{{*/
     $content = _get_page_template_from_extension($action);
@@ -461,43 +669,91 @@ function _generate_docs_api_struct_group_list($data_type)
     return $content;
 }/*}}}*/
 
-command('crud:make-from-description', '通过描述文件生成 CRUD 控制器和页面', function ()
+command('crud:make-controller-from-description', '通过描述文件生成 CRUD 控制器', function ()
 {/*{{{*/
-    $entity_names = _get_entity_name_by_command_paramater();
+    $entity_name = command_paramater('entity_name', '');
 
-    foreach ($entity_names as $entity_name) {
+    if ($entity_name) {
+
+        $output_file_name = command_paramater('output_file', '');
 
         $entity_info = description_get_entity($entity_name);
 
         $relationship_infos = description_get_relationship_with_snaps_by_entity($entity_name);
 
-        $dir_name = VIEW_DIR.'/'.$entity_name;
+        $controller_file_string = _generate_controller_file($entity_name, $entity_info, $relationship_infos);
+
+        if (empty($output_file_name)) {
+            $output_file_name = CONTROLLER_DIR.'/'.$entity_name.'.php';
+        }
+
+        // 写文件
+        error_log($controller_file_string, 3, $output_file_name);
+        echo $output_file_name."\n";
+    }
+});/*}}}*/
+
+command('crud:make-page-from-description', '通过描述文件生成 CRUD 页面', function ()
+{/*{{{*/
+    $entity_name = command_paramater('entity_name', '');
+
+    if ($entity_name) {
+
+        $output_dir = command_paramater('output_dir', '');
+
+        $entity_info = description_get_entity($entity_name);
+
+        $relationship_infos = description_get_relationship_with_snaps_by_entity($entity_name);
+
+        if (empty($output_dir)) {
+            $dir_name = VIEW_DIR.'/'.$entity_name;
+        } else {
+            $dir_name = $output_dir.'/'.$entity_name;
+        }
 
         otherwise(
             is_dir($dir_name)
             || mkdir($dir_name, 0755),
             "当前用户没有权限创建目录 $dir_name");
 
-        $controller_file_string = _generate_controller_file($entity_name, $entity_info, $relationship_infos);
         $view_add_file_string = _generate_view_add_file($entity_name, $entity_info, $relationship_infos);
         $view_update_file_string = _generate_view_update_file($entity_name, $entity_info, $relationship_infos);
         $view_list_file_string = _generate_view_list_file($entity_name, $entity_info, $relationship_infos);
 
-        // 写文件
-        error_log($controller_file_string, 3, $controller_file = CONTROLLER_DIR.'/'.$entity_name.'.php'); echo "generate $controller_file success!\n";
-        error_log($view_add_file_string, 3, $file = $dir_name.'/add.php'); echo "generate ".$file." success!\n";
-        error_log($view_update_file_string, 3, $file = $dir_name.'/update.php'); echo "generate ".$file." success!\n";
-        error_log($view_list_file_string, 3, $file = $dir_name.'/list.php'); echo "generate ".$file." success!\n";
+        error_log($view_add_file_string, 3, $file = $dir_name.'/add.php'); echo $file."\n";
+        error_log($view_update_file_string, 3, $file = $dir_name.'/update.php'); echo $file."\n";
+        error_log($view_list_file_string, 3, $file = $dir_name.'/list.php'); echo $file."\n";
+    }
+});/*}}}*/
 
-        echo "todo ".ROOT_DIR."/public/index.php include $controller_file\n";
+command('crud:make-error-code-from-description', '通过描述文件生成 error-code', function ()
+{/*{{{*/
+    $entity_name = command_paramater('entity_name', '');
+
+    if ($entity_name) {
+
+        $entity_info = description_get_entity($entity_name);
+
+        $relationship_infos = description_get_relationship_with_snaps_by_entity($entity_name);
+
+        $config_file = config_dir()[0].'/error_code.php';
+        $config_file_string = _generate_error_code_file($entity_name, $entity_info, $relationship_infos);
+
+        if (is_file($config_file)) {
+            $config_file_string = _merge_error_code_content_by_annotate($entity_name, file_get_contents($config_file), $config_file_string);
+        }
+
+        // 写文件
+        file_put_contents($config_file, $config_file_string);
+        echo $config_file."\n";
     }
 });/*}}}*/
 
 command('crud:make-docs-from-description', '通过描述文件生成 CRUD 相关接口文档', function ()
 {/*{{{*/
-    $entity_names = _get_entity_name_by_command_paramater();
+    $entity_name = command_paramater('entity_name', '');
 
-    foreach ($entity_names as $entity_name) {
+    if ($entity_name) {
 
         $entity_info = description_get_entity($entity_name);
 
@@ -515,7 +771,29 @@ command('crud:make-docs-from-description', '通过描述文件生成 CRUD 相关
 
         $docs_api_file_relative_path = 'api/'.$entity_name.'.md';
         error_log($docs_api_file_string, 3, $docs_api_file = DOCS_DIR.'/'.$docs_api_file_relative_path);
-        echo "generate $docs_api_file success!\n";
-        echo "todo ".DOCS_DIR."/sidebar.md include $docs_api_file_relative_path\n";
+        echo $docs_api_file."\n";
+    }
+});/*}}}*/
+
+command('crud:make-error-code-docs-from-description', '通过描述文件生成 error-code 相关文档', function ()
+{/*{{{*/
+    $entity_name = command_paramater('entity_name', '');
+
+    if ($entity_name) {
+
+        $entity_info = description_get_entity($entity_name);
+
+        $relationship_infos = description_get_relationship_with_snaps_by_entity($entity_name);
+
+        $markdown_file = DOCS_DIR.'/error_code.md';
+        $markdown_file_string = _generate_error_code_docs_file($entity_name, $entity_info, $relationship_infos);
+
+        if (is_file($markdown_file)) {
+            $markdown_file_string = _merge_error_code_docs_content_by_annotate($entity_name, file_get_contents($markdown_file), $markdown_file_string);
+        }
+
+        // 写文件
+        file_put_contents($markdown_file, $markdown_file_string);
+        echo $markdown_file."\n";
     }
 });/*}}}*/

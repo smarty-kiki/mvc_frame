@@ -2,5 +2,7 @@
   - [开始上手](intro.md)
 - 页面文档
 - 接口文档
+  - [通用](api/index.md)
 - 实体说明
   - [实体关联](entity/relationship.md)
+  - [错误码](error_code.md)
