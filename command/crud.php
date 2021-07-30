@@ -302,6 +302,19 @@ function _generate_view_add_file($entity_name, $entity_info, $relationship_infos
     return str_replace('^^', '', $content);
 }/*}}}*/
 
+function _generate_view_detail_file($entity_name, $entity_info, $relationship_infos)
+{/*{{{*/
+    $template = _generate_page('detail');
+
+    $content = blade_eval($template, [
+        'entity_name' => $entity_name,
+        'entity_info' => $entity_info,
+        'relationship_infos' => $relationship_infos,
+    ]);
+
+    return str_replace('^^', '', $content);
+}/*}}}*/
+
 function _generate_view_update_file($entity_name, $entity_info, $relationship_infos)
 {/*{{{*/
     $template = _generate_page('update');
@@ -717,10 +730,12 @@ command('crud:make-page-from-description', '通过描述文件生成 CRUD 页面
             "当前用户没有权限创建目录 $dir_name");
 
         $view_add_file_string = _generate_view_add_file($entity_name, $entity_info, $relationship_infos);
+        $view_detail_file_string = _generate_view_detail_file($entity_name, $entity_info, $relationship_infos);
         $view_update_file_string = _generate_view_update_file($entity_name, $entity_info, $relationship_infos);
         $view_list_file_string = _generate_view_list_file($entity_name, $entity_info, $relationship_infos);
 
         error_log($view_add_file_string, 3, $file = $dir_name.'/add.php'); echo $file."\n";
+        error_log($view_detail_file_string, 3, $file = $dir_name.'/detail.php'); echo $file."\n";
         error_log($view_update_file_string, 3, $file = $dir_name.'/update.php'); echo $file."\n";
         error_log($view_list_file_string, 3, $file = $dir_name.'/list.php'); echo $file."\n";
     }

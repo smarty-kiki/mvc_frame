@@ -75,6 +75,7 @@
         </td>
 @endforeach
         <td>
+            <a href='/{{ english_word_pluralize($entity_name) }}/detail/^^{^^{ ${{ $entity_name }}->id ^^}^^}'>详情</a>
             <a href='/{{ english_word_pluralize($entity_name) }}/update/^^{^^{ ${{ $entity_name }}->id ^^}^^}'>修改</a>
             <a href='javascript:delete_^^{^^{ ${{ $entity_name }}->id ^^}^^}.submit();'>删除</a>
             <form id='delete_^^{^^{ ${{ $entity_name }}->id ^^}^^}' action='/{{ english_word_pluralize($entity_name) }}/delete/^^{^^{ ${{ $entity_name }}->id ^^}^^}' method='POST'></form>
