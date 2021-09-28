@@ -63,5 +63,5 @@ $entity = $relationship['entity'];
     if (not_null(${{ $struct_name }})) { ${{ $entity_name }}->{{ $struct_name }} = ${{ $struct_name }}; }
 @endforeach
 
-    return redirect('/{{ english_word_pluralize($entity_name) }}');
+    return redirect(input('refer_url', '/{{ english_word_pluralize($entity_name) }}'));
 });/*}}}*/

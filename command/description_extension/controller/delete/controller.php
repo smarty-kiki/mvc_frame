@@ -5,5 +5,5 @@ if_post('/{{ english_word_pluralize($entity_name) }}/delete/*', function (${{ $e
 
     ${{ $entity_name }}->delete();
 
-    return redirect('/{{ english_word_pluralize($entity_name) }}');
+    return redirect(input('refer_url', '/{{ english_word_pluralize($entity_name) }}'));
 });/*}}}*/
