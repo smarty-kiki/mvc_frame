@@ -224,11 +224,11 @@ then
             echo include $ROOT_DIR/docs/page/$entity_name.md success!
             echo include $ROOT_DIR/docs/api/$entity_name.md success!
 
-            grep -v "'$entity_name'" $ROOT_DIR/controller/index.php > /tmp/controller_index.php
-            mv /tmp/controller_index.php $ROOT_DIR/controller/index.php
+            grep -v "'$entity_name'" $ROOT_DIR/controller/base.php > /tmp/controller_base.php
+            mv /tmp/controller_base.php $ROOT_DIR/controller/base.php
             list_url=`cat $ROOT_DIR/controller/$entity_name.php | head -n 3 | tail -n 1 | cut -d "'" -f 2`
             menu_name=`cat $ROOT_DIR/domain/description/$entity_name.yml | head -n 2 | tail -n 1 | cut -d ' ' -f 2`
-            /bin/sed -i "/url_infos/a\\ \ \ \ \ \ \ \ \ \ \ \ [\ 'name'\ =>\ \'$menu_name管理\',\ \'key\'\ =>\ \'$entity_name\',\ \'href\'\ =>\ \'$list_url\',\ ]," $ROOT_DIR/controller/index.php
+            /bin/sed -i "/url_infos/a\\ \ \ \ \ \ \ \ \ \ \ \ [\ 'name'\ =>\ \'$menu_name管理\',\ \'key\'\ =>\ \'$entity_name\',\ \'href\'\ =>\ \'$list_url\',\ ]," $ROOT_DIR/controller/base.php
         fi
 
         if [ "$event" = "DELETE" ];then
@@ -275,8 +275,8 @@ then
             echo delete $ROOT_DIR/docs/page/$entity_name.md success!
             echo delete $ROOT_DIR/docs/api/$entity_name.md success!
 
-            grep -v "'$entity_name'" $ROOT_DIR/controller/index.php > /tmp/controller_index.php
-            mv /tmp/controller_index.php $ROOT_DIR/controller/index.php
+            grep -v "'$entity_name'" $ROOT_DIR/controller/base.php > /tmp/controller_base.php
+            mv /tmp/controller_base.php $ROOT_DIR/controller/base.php
         fi
 
         ) | echo_filter

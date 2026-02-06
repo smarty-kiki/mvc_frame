@@ -19,7 +19,7 @@
 │   ├── mysql.php (数据库 mysql 配置文件)  
 │   └── redis.php (存储 redis 配置文件)  
 ├── controller (控制器文件目录)  
-│   └── index.php (helloworld 控制器)  
+│   └── base.php (helloworld 控制器)  
 ├── domain (领域层目录)  
 │   ├── dao (DAO 层文件目录)  
 │   ├── entity (实体层文件目录)  
@@ -59,4 +59,3 @@
 2. 确保机器上有 docker 环境
 3. 执行代码中的脚本快速启动环境 sh project/tool/start_development_server.sh  
 4. 输入当前用户密码。此处是为了开发方便映射了 80 和 3306 端口，若不允许使用 80 可以手动修改第三条提到的脚本更换端口
-
